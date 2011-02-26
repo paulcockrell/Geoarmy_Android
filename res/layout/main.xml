@@ -23,7 +23,7 @@
     	android:paddingRight="5px"
     	android:paddingTop="5px">
 		
-			<paul.android.maps.TransparentPanel
+			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
 		       	android:layout_height="fill_parent"
@@ -38,9 +38,9 @@
 		        	android:layout_height="fill_parent"
 		        	android:text="Lng: ---"/>
 	        
-			</paul.android.maps.TransparentPanel>
+			</geoarmy.android.TransparentPanel>
 			
-			<paul.android.maps.TransparentPanel
+			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel_02" 
 		   	    android:layout_width="fill_parent"
 		       	android:layout_height="wrap_content"
@@ -55,7 +55,7 @@
 		        	android:layout_height="fill_parent"
 		        	android:text="Lat: ---"/>
 	        
-			</paul.android.maps.TransparentPanel>
+			</geoarmy.android.TransparentPanel>
     
     </LinearLayout>
     
@@ -68,7 +68,7 @@
     	android:paddingRight="5px"
     	android:paddingBottom="5px">
     	
-    		<paul.android.maps.TransparentPanel
+    		<geoarmy.android.TransparentPanel
 					android:id="@+id/transparent_panel_03" 
 			   	    android:layout_width="fill_parent"
 			       	android:layout_height="wrap_content"
@@ -83,9 +83,9 @@
 			        	android:layout_height="fill_parent"
 			        	android:text="Geocache couter: None"/>
 			        	
-				</paul.android.maps.TransparentPanel>
+				</geoarmy.android.TransparentPanel>
 
-			<paul.android.maps.TransparentPanel
+			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel_2" 
 		   	    android:layout_width="fill_parent"
 		       	android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
 		        	android:layout_height="fill_parent"
 		        	android:text="GPS: Searching"/>
 	        
-			</paul.android.maps.TransparentPanel>
+			</geoarmy.android.TransparentPanel>
 
 	</LinearLayout>
     
