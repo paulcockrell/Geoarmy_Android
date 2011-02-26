@@ -42,7 +42,7 @@
 		android:id="@+id/testButton"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Test Settings"
+		android:text="Validate account"
 		android:onClick="">
 	</Button>
 	
@@ -50,7 +50,7 @@
 		android:id="@+id/saveButton"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Save Settings"
+		android:text="Save"
 		android:onClick="">
 	</Button>
 
