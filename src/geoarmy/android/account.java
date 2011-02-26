@@ -77,12 +77,9 @@ public class account extends Activity {
 	    			// get variables that are in the text fields, they may not have been saved yet as we are running a test
     				String username      = userName.getText().toString();
     				String passwd        = password.getText().toString();
-    				String tokenUrl      = "login/get_auth_token";
     				String commandUrl    = "login/login";
-    				// create instance of ConnectionTester
-	    			NetworkTools nt = new NetworkTools();
-	    			String token = nt.getToken(BASEURL + tokenUrl);
-	    			NetworkTools.authenticate(BASEURL + commandUrl, username, passwd, token, mHandler, context);    				    				
+ 
+	    			NetworkTools.authenticate(BASEURL + commandUrl, username, passwd, mHandler, context);    				    				
 	    		} catch (Exception e) {
 	    			// Oppps!!! maybe log message 
 	    			test.setText("Error performing test, please try again");

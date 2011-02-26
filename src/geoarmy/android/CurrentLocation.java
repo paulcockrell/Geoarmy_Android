@@ -45,8 +45,9 @@ public class CurrentLocation extends MapActivity {
 	/** preference variables **/
 	private SharedPreferences prefs = null;
 	public static final String PREFERENCESNAME = "GeocacheResponder";
-	private static final String commandUrl = "geocaches/";
+	private static final String commandUrl = "geocaches";
 	public static final String BASEURL = "http://www.geoarmy.net/";
+	
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
@@ -130,8 +131,12 @@ public class CurrentLocation extends MapActivity {
     private final void getGeocaches() {
         final Handler mHandler = new Handler();
     	final Context context = CurrentLocation.this;
+    	double parsedLat = latitude;
+    	parsedLat = parsedLat / 1000000;
+    	double parsedLon = longitude;
+    	parsedLon = parsedLon / 1000000;
     	//get geocache points	
-    	NetworkTools.getLocations(BASEURL + commandUrl, latitude, longitude, mHandler, context);
+    	NetworkTools.getLocations(BASEURL + commandUrl, parsedLat, parsedLon, mHandler, context);
     }
     
     private final void drawGeocaches(locationList mylocationList) {

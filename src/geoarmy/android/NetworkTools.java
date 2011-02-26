@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -12,6 +14,7 @@ import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnManagerParams;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -31,7 +34,9 @@ public class NetworkTools {
     private static HttpClient mHttpClient;
     public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
     private static final String TAG = "NetworkUtilities";
-
+	private static String tokenUrl = "login/get_auth_token";
+	public static final String BASEURL = "http://www.geoarmy.net/";
+	
 	public NetworkTools() {}
 	
     /**
@@ -69,8 +74,10 @@ public class NetworkTools {
         return t;
     }
 
-	public String getToken(String url) {
+	public static String getToken() {
 	   	final HttpResponse resp;
+	   	final String url = BASEURL + tokenUrl;
+	   	
         String respString;
     	// post vars
     	final ArrayList<NameValuePair> params = new ArrayList();
@@ -122,16 +129,19 @@ public class NetworkTools {
         final String name, final String password, final String token, final Handler handler, final Context context) {
             final Runnable runnable = new Runnable() {
                 public void run() {
-                    authenticate(url, name, password, token, handler, context);
+                    authenticate(url, name, password, handler, context);
                 }
             };
             // run on background thread.
             return NetworkTools.performOnBackgroundThread(runnable);
         }
 
-	public static boolean authenticate(String url, String name, String password, String token, Handler handler, final Context context) {
+	public static boolean authenticate(String url, String name, String password, Handler handler, final Context context) {
     	final HttpResponse resp;
         String respString;
+        
+        //get token
+		String token = getToken();
     	// post vars
     	final ArrayList<NameValuePair> params = new ArrayList();
     	params.add(new BasicNameValuePair("authenticity_token", token));
@@ -181,30 +191,27 @@ public class NetworkTools {
         }
     }
     
-	public static boolean getLocations(String url, int latitude, int longitude, Handler handler, Context context) {
+	public static boolean getLocations(String url, double latitude, double longitude, Handler handler, Context context) {
 		locationList treasureLocations = new locationList();
     	final HttpResponse resp;
         String respString;
-  
+        // get token
+        String token = getToken();
     	// post vars
-    	final ArrayList<NameValuePair> params = new ArrayList();
-    	params.add(new BasicNameValuePair("latitude", Integer.toString(latitude)));
-    	params.add(new BasicNameValuePair("longitude", Integer.toString(longitude)));
-    	params.add(new BasicNameValuePair("mobile", "true"));
-    	HttpEntity entity = null;
-        try {
-            entity = new UrlEncodedFormEntity(params);
-        } catch (final UnsupportedEncodingException e) {
-            // this should never happen.
-            throw new AssertionError(e);
-        }
-        final HttpPost post = new HttpPost(url);
-        post.addHeader(entity.getContentType());
-        post.setEntity(entity);
+        url = url + "?authenticity_token="+token+"&lat="+latitude+"&lon="+longitude+"&commit=true&mobile=true";
+    	final HttpGet get = new HttpGet(url);
         maybeCreateHttpClient();
-
+        
+        try {
+			get.setURI(new URI(url));
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        
 	    try {
-            resp = mHttpClient.execute(post);
+	    	
+            resp = mHttpClient.execute(get);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
