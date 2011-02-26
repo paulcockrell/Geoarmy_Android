@@ -5,6 +5,7 @@ import java.util.List;
 
 import geoarmy.android.locationList;
 import geoarmy.android.location;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -41,7 +42,10 @@ public class CurrentLocation extends MapActivity {
 	private static final int RADAR_ID = R.id.compass;
 	private static final int REFRESH_ID = R.id.refresh;
 	private static final int CENTER_ID = R.id.center;
-	
+	private static final int LIST_ID   = R.id.geocachelist;
+	private static final int SHOW_ID   = R.id.geocacheshow;
+    private ProgressDialog m_ProgressDialog = null; 
+    
 	/** preference variables **/
 	private SharedPreferences prefs = null;
 	public static final String PREFERENCESNAME = "GeocacheResponder";
@@ -105,8 +109,24 @@ public class CurrentLocation extends MapActivity {
         case CENTER_ID:
         	centerMap();
         	break;
+        case LIST_ID:
+        	listView();
+        	break;
+        case SHOW_ID:
+        	showView();
+        	break;
         }
         return super.onOptionsItemSelected(item);
+    }
+    
+    private final void listView() {
+    	Intent i = new Intent(this, geocacheListActivity.class);
+    	startActivity(i);
+    }
+    
+    private final void showView() {
+    	Intent i = new Intent(this, geocacheShow.class);
+    	startActivity(i);
     }
     
     private final void editAccount() {
@@ -126,9 +146,12 @@ public class CurrentLocation extends MapActivity {
     
     public void onGeocachesResult(locationList mylocationList) {
     	drawGeocaches(mylocationList);
+    	m_ProgressDialog.dismiss();
     }
     
     private final void getGeocaches() {
+        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
+                "Please wait...", "Retrieving data ...", true);
         final Handler mHandler = new Handler();
     	final Context context = CurrentLocation.this;
     	double parsedLat = latitude;

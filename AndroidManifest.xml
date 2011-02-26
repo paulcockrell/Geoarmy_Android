@@ -13,8 +13,13 @@
         </activity>
 		<activity android:name="compass" android:label="@string/compassTitle">
 		</activity>
+        <activity android:label="@string/geocacheListTitle" android:name="geocacheListActivity">
+        </activity>
+        <activity android:name="geocacheShow" android:label="@string/geocacheShowTitle">
+        </activity>
         <uses-library android:name="com.google.android.maps"></uses-library>
-	</application>
+	
+</application>
 
 
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>

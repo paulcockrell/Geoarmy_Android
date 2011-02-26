@@ -2,6 +2,7 @@ package geoarmy.android;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -16,6 +17,7 @@ public class account extends Activity {
 	 public static final String TAG = "account";
 	 private SharedPreferences prefs = null;
 	 private Editor editor = null;
+	 private ProgressDialog m_ProgressDialog = null;
 	 public static final String BASEURL = "http://www.geoarmy.net/";
 	 public static final String USERNAME = "username";
 	 public static final String PASSWORD = "password";
@@ -74,6 +76,8 @@ public class account extends Activity {
 	    		final Context context = account.this;
 	    		test.setText("Please wait, contacting server...");
 	    		try {
+	    			m_ProgressDialog = ProgressDialog.show(account.this,    
+	    	                "Please wait...", "Retrieving data ...", true);
 	    			// get variables that are in the text fields, they may not have been saved yet as we are running a test
     				String username      = userName.getText().toString();
     				String passwd        = password.getText().toString();
@@ -96,5 +100,6 @@ public class account extends Activity {
     	} else {
     		test.setText("Invalid account details, please try again.");
     	}
+    	m_ProgressDialog.dismiss();
     }
 }

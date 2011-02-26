@@ -6,4 +6,7 @@
     <string name="authenticateTitle">Connect to remote server</string>
 	<string name="compassTitle">Geocache Compass</string>
 	
+<string name="number_of_geocaches">No geocaches</string>
+<string name="geocacheListTitle">Geocache list</string>
+<string name="geocacheShowTitle">Show geocache</string>
 </resources>
