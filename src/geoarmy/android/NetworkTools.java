@@ -22,12 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import android.util.Log;
 
-public class ConnectionTester {
+public class NetworkTools {
     private static HttpClient mHttpClient;
     public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
     private static final String TAG = "NetworkUtilities";
 
-	public ConnectionTester() {}
+	public NetworkTools() {}
 	
     /**
      * Configures the httpClient to connect to the URL provided.

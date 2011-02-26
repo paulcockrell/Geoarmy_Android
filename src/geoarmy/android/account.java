@@ -77,9 +77,9 @@ public final class account extends Activity {
     				String tokenUrl      = "login/get_auth_token";
     				String commandUrl    = "login/login";
     				// create instance of ConnectionTester
-	    			ConnectionTester ct = new ConnectionTester();
-	    			String token = ct.getToken(BASEURL + tokenUrl);
-	    			boolean connectionResult = ct.connection(BASEURL + commandUrl, username, passwd, token);
+	    			NetworkTools nt = new NetworkTools();
+	    			String token = nt.getToken(BASEURL + tokenUrl);
+	    			boolean connectionResult = nt.connection(BASEURL + commandUrl, username, passwd, token);
 	    			if (connectionResult) {
 	    				test.setText("Account details have been verified, please save the changes.");
 	    			} else {
