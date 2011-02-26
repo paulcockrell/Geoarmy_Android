@@ -181,7 +181,7 @@ public class NetworkTools {
         }
     }
     
-	public locationList getLocations(String url, int latitude, int longitude) {
+	public static boolean getLocations(String url, int latitude, int longitude, Handler handler, Context context) {
 		locationList treasureLocations = new locationList();
     	final HttpResponse resp;
         String respString;
@@ -214,19 +214,20 @@ public class NetworkTools {
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
                 treasureLocations = newLocationList(respString) ;
-                return treasureLocations;   
+                sendGeocachesResult(treasureLocations, handler, context);
+                return true;   
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
-                return newLocationList("");
+                return false;
             }
         } catch (final IOException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "IOException when getting authtoken", e);
             }
  
-            return newLocationList("");
+            return false;
         } finally {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "getAuthtoken completing");
@@ -234,7 +235,7 @@ public class NetworkTools {
         }
     }
 	
-    private locationList newLocationList(String JSONString) {
+    private static locationList newLocationList(String JSONString) {
     	locationList mylocationList = new locationList();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -320,6 +321,26 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((account) context).onAuthenticationResult(result);
+            }
+        });
+    }
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendGeocachesResult(final locationList result, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((CurrentLocation) context).onGeocachesResult(result);
             }
         });
     }

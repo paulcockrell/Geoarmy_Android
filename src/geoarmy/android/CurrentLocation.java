@@ -13,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -49,6 +50,7 @@ public class CurrentLocation extends MapActivity {
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
+       
         setContentView(R.layout.main); // bind the layout to the activity
 
         // lat-lng text
@@ -69,7 +71,7 @@ public class CurrentLocation extends MapActivity {
         mapView.invalidate();
               
         // Now everything is initialised, lets draw the markers.
-        drawGeocaches();
+        getGeocaches();
     }
     
 	public void loadPreferences() {
@@ -97,7 +99,7 @@ public class CurrentLocation extends MapActivity {
         	compassView();
         	break;
         case REFRESH_ID:
-            drawGeocaches();
+            getGeocaches();
             break;
         case CENTER_ID:
         	centerMap();
@@ -121,7 +123,18 @@ public class CurrentLocation extends MapActivity {
     	mapController.animateTo(point);
 	}
     
-    private final void drawGeocaches() {
+    public void onGeocachesResult(locationList mylocationList) {
+    	drawGeocaches(mylocationList);
+    }
+    
+    private final void getGeocaches() {
+        final Handler mHandler = new Handler();
+    	final Context context = CurrentLocation.this;
+    	//get geocache points	
+    	NetworkTools.getLocations(BASEURL + commandUrl, latitude, longitude, mHandler, context);
+    }
+    
+    private final void drawGeocaches(locationList mylocationList) {
         List<Overlay> mapOverlays = mapView.getOverlays();
         
         // Load preferences
@@ -134,14 +147,9 @@ public class CurrentLocation extends MapActivity {
         
     	treasureOverlay = new StaticItemizedOverlay(treasurePin, this); 
     	OverlayItem overlayTreasure;
-    	
-    	locationList mylocationList = new locationList();
+
     	// our location
         GeoPoint point = new GeoPoint(latitude, longitude);
-        
-    	//get geocache points and add to map  	
-    	NetworkTools nt = new NetworkTools();
-    	mylocationList = nt.getLocations(BASEURL + commandUrl, latitude, longitude);
     	
     	int len = mylocationList.length();
     	
