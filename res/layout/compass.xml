@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/compasslayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" 
+    android:background="#FFFFFF">  
+
+  <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:gravity="top"
+    	android:paddingLeft="5px"
+    	android:paddingRight="5px"
+    	android:paddingTop="5px">
+    	
+	<TextView android:id="@+id/lbl_degrees" 
+		android:layout_width="fill_parent" 
+		android:layout_height="wrap_content"
+		android:textSize="20px"
+		android:textStyle="bold"
+		android:text="degrees"
+		/>
+		
+	</LinearLayout>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:gravity="bottom"
+    	android:paddingLeft="5px"
+    	android:paddingRight="5px"
+    	android:paddingTop="5px">
+  <!-- 
+<Button 
+		android:id="@+id/closeButton"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Close Compass"
+		android:gravity="bottom"
+		android:onClick="">
+	</Button>-->
+	</LinearLayout>
+	<ImageView
+  android:id="@+id/compass"   
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:src="@drawable/compass"/>
+  
+</RelativeLayout>

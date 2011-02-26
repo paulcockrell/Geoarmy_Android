@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- development map key: android:apiKey="0kIwzAJ2JPnkR_spOcabz7QAsVwtavLhcl0atMw" -->
+<!-- production map key: android:apiKey="0kIwzAJ2JPnkCu100z7ecCfZl862_wUwoUk6F2Q" -->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainlayout"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >  
+	<com.google.android.maps.MapView
+		android:id="@+id/mapview"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:clickable="true"
+        android:apiKey="0kIwzAJ2JPnkCu100z7ecCfZl862_wUwoUk6F2Q"
+    />
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="vertical"
+    	android:gravity="top"
+    	android:paddingLeft="5px"
+    	android:paddingRight="5px"
+    	android:paddingTop="5px">
+		
+			<paul.android.maps.TransparentPanel
+				android:id="@+id/transparent_panel" 
+		   	    android:layout_width="fill_parent"
+		       	android:layout_height="fill_parent"
+		       	android:paddingTop="5px"
+		       	android:paddingLeft="5px"
+				android:paddingBottom="5px"
+				android:paddingRight="5px">
+
+		        <TextView android:id="@+id/location_text_lng"
+		        	android:textStyle="bold"
+		        	android:layout_width="fill_parent"
+		        	android:layout_height="fill_parent"
+		        	android:text="Lng: ---"/>
+	        
+			</paul.android.maps.TransparentPanel>
+			
+			<paul.android.maps.TransparentPanel
+				android:id="@+id/transparent_panel_02" 
+		   	    android:layout_width="fill_parent"
+		       	android:layout_height="wrap_content"
+		       	android:paddingTop="5px"
+		       	android:paddingLeft="5px"
+				android:paddingBottom="5px"
+				android:paddingRight="5px">
+
+		        <TextView android:id="@+id/location_text_lat"
+		        	android:textStyle="bold"
+		        	android:layout_width="fill_parent"
+		        	android:layout_height="fill_parent"
+		        	android:text="Lat: ---"/>
+	        
+			</paul.android.maps.TransparentPanel>
+    
+    </LinearLayout>
+    
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:orientation="vertical"
+    	android:gravity="bottom"
+    	android:paddingLeft="5px"
+    	android:paddingRight="5px"
+    	android:paddingBottom="5px">
+    	
+    		<paul.android.maps.TransparentPanel
+					android:id="@+id/transparent_panel_03" 
+			   	    android:layout_width="fill_parent"
+			       	android:layout_height="wrap_content"
+			       	android:paddingTop="5px"
+			       	android:paddingLeft="5px"
+					android:paddingBottom="5px"
+					android:paddingRight="5px">
+					
+					<TextView android:id="@+id/status_text_00"
+			        	android:textStyle="bold"
+			        	android:layout_width="fill_parent"
+			        	android:layout_height="fill_parent"
+			        	android:text="Geocache couter: None"/>
+			        	
+				</paul.android.maps.TransparentPanel>
+
+			<paul.android.maps.TransparentPanel
+				android:id="@+id/transparent_panel_2" 
+		   	    android:layout_width="fill_parent"
+		       	android:layout_height="wrap_content"
+		       	android:paddingTop="5px"
+		       	android:paddingLeft="5px"
+				android:paddingBottom="5px"
+				android:paddingRight="5px">
+		        	
+		        <TextView android:id="@+id/status_text_01"
+		        	android:textStyle="bold"
+		        	android:layout_width="fill_parent"
+		        	android:layout_height="fill_parent"
+		        	android:text="GPS: Searching"/>
+	        
+			</paul.android.maps.TransparentPanel>
+
+	</LinearLayout>
+    
+</RelativeLayout>
