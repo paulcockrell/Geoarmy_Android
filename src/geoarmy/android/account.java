@@ -6,12 +6,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public final class account extends Activity {
+public class account extends Activity {
 	 public static final String TAG = "account";
 	 private SharedPreferences prefs = null;
 	 private Editor editor = null;
@@ -32,6 +33,7 @@ public final class account extends Activity {
 	    final TextView test          = (TextView) findViewById(R.id.lbl_test);
 	    final Button   testButton    = (Button) findViewById(R.id.testButton);
 	    final Button   saveButton    = (Button) findViewById(R.id.saveButton);
+	    final Handler mHandler = new Handler();
 	    
 	    prefs = this.getSharedPreferences(PREFERENCESNAME, Context.MODE_PRIVATE);
 	    editor = prefs.edit();
@@ -69,6 +71,7 @@ public final class account extends Activity {
 	    
 	    testButton.setOnClickListener(new Button.OnClickListener() {
 	    	public void onClick(View v) {
+	    		final Context context = account.this;
 	    		test.setText("Please wait, contacting server...");
 	    		try {
 	    			// get variables that are in the text fields, they may not have been saved yet as we are running a test
@@ -79,18 +82,22 @@ public final class account extends Activity {
     				// create instance of ConnectionTester
 	    			NetworkTools nt = new NetworkTools();
 	    			String token = nt.getToken(BASEURL + tokenUrl);
-	    			boolean connectionResult = nt.connection(BASEURL + commandUrl, username, passwd, token);
-	    			if (connectionResult) {
-	    				test.setText("Account details have been verified, please save the changes.");
-	    			} else {
-	    				test.setText("Invalid account details, you must have an account with www.geoarmy.net.\nPlease try again.");
-	    			}
-	    				    				
+	    			NetworkTools.authenticate(BASEURL + commandUrl, username, passwd, token, mHandler, context);    				    				
 	    		} catch (Exception e) {
 	    			// Oppps!!! maybe log message 
 	    			test.setText("Error performing test, please try again");
 	    		}
 	    	}
 	    });
+	   
 	}
+	 
+    public void onAuthenticationResult(boolean result) {
+    	final TextView test = (TextView) findViewById(R.id.lbl_test);
+    	if (result) {
+    		test.setText("Account details have been verified, please save the changes.");
+    	} else {
+    		test.setText("Invalid account details, please try again.");
+    	}
+    }
 }

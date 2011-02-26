@@ -5,7 +5,6 @@ import java.util.List;
 
 import geoarmy.android.locationList;
 import geoarmy.android.location;
-import geoarmy.android.RestClient;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,7 +26,6 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 public class CurrentLocation extends MapActivity {
-	RestClient restClient;
 	MapController mapController;
 	MapView mapView;
 	StaticItemizedOverlay treasureOverlay;
@@ -46,12 +44,9 @@ public class CurrentLocation extends MapActivity {
 	/** preference variables **/
 	private SharedPreferences prefs = null;
 	public static final String PREFERENCESNAME = "GeocacheResponder";
-	private static final String commandUrl = "index.php?option=com_geocache&view=json&format=raw";
+	private static final String commandUrl = "geocaches/";
 	public static final String BASEURL = "http://www.geoarmy.net/";
-	private static String username   = "";
-	private static String password   = "";
-	
-    /** Called when the activity is first created. */
+	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.main); // bind the layout to the activity
@@ -79,8 +74,8 @@ public class CurrentLocation extends MapActivity {
     
 	public void loadPreferences() {
 		prefs = this.getSharedPreferences(PREFERENCESNAME, Context.MODE_PRIVATE);
-		username = prefs.getString(account.USERNAME, "user");
-		password = prefs.getString(account.PASSWORD, "password");
+		prefs.getString(account.USERNAME, "user");
+		prefs.getString(account.PASSWORD, "password");
 	}
     
     @Override
@@ -141,10 +136,12 @@ public class CurrentLocation extends MapActivity {
     	OverlayItem overlayTreasure;
     	
     	locationList mylocationList = new locationList();
-    	
-    	//get geocache points and add to map
-    	RestClient r = new RestClient();  	
-    	mylocationList = r.getGeolocations(BASEURL + commandUrl + "&username=" + username + "&passwd=" + password);
+    	// our location
+        GeoPoint point = new GeoPoint(latitude, longitude);
+        
+    	//get geocache points and add to map  	
+    	NetworkTools nt = new NetworkTools();
+    	mylocationList = nt.getLocations(BASEURL + commandUrl, latitude, longitude);
     	
     	int len = mylocationList.length();
     	
@@ -171,9 +168,7 @@ public class CurrentLocation extends MapActivity {
         //
         Drawable userPin = this.getResources().getDrawable(R.drawable.center_marker_male);
         hunterOverlay = new DynamicItemizedOverlay(userPin, this);
-		
-        GeoPoint point = new GeoPoint(latitude, longitude);
- 
+
         OverlayItem overlayitem = new OverlayItem(point, "Hello Hunter", "Point: " + point);
         hunterOverlay.addOverlay(overlayitem);
         mapOverlays.add(hunterOverlay); // add new marker

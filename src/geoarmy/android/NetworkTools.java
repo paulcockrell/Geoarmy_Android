@@ -20,6 +20,11 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import geoarmy.android.account;
+
+
+import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
 public class NetworkTools {
@@ -113,8 +118,18 @@ public class NetworkTools {
         }
 	}
 	  
-    
-	public boolean connection(String url, String name, String password, String token) {
+    public static Thread attemptAuth(final String url,
+        final String name, final String password, final String token, final Handler handler, final Context context) {
+            final Runnable runnable = new Runnable() {
+                public void run() {
+                    authenticate(url, name, password, token, handler, context);
+                }
+            };
+            // run on background thread.
+            return NetworkTools.performOnBackgroundThread(runnable);
+        }
+
+	public static boolean authenticate(String url, String name, String password, String token, Handler handler, final Context context) {
     	final HttpResponse resp;
         String respString;
     	// post vars
@@ -145,7 +160,8 @@ public class NetworkTools {
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
-                return connectionResult(respString);   
+                sendResult(connectionResult(respString), handler, context);   
+                return true;
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
@@ -163,6 +179,83 @@ public class NetworkTools {
                 Log.v(TAG, "getAuthtoken completing");
             }
         }
+    }
+    
+	public locationList getLocations(String url, int latitude, int longitude) {
+		locationList treasureLocations = new locationList();
+    	final HttpResponse resp;
+        String respString;
+  
+    	// post vars
+    	final ArrayList<NameValuePair> params = new ArrayList();
+    	params.add(new BasicNameValuePair("latitude", Integer.toString(latitude)));
+    	params.add(new BasicNameValuePair("longitude", Integer.toString(longitude)));
+    	params.add(new BasicNameValuePair("mobile", "true"));
+    	HttpEntity entity = null;
+        try {
+            entity = new UrlEncodedFormEntity(params);
+        } catch (final UnsupportedEncodingException e) {
+            // this should never happen.
+            throw new AssertionError(e);
+        }
+        final HttpPost post = new HttpPost(url);
+        post.addHeader(entity.getContentType());
+        post.setEntity(entity);
+        maybeCreateHttpClient();
+
+	    try {
+            resp = mHttpClient.execute(post);
+                        
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Successful authentication");
+                }
+                HttpEntity hEntity = resp.getEntity();
+                InputStream instream = hEntity.getContent();
+                respString = convertStreamToString(instream,false);
+                treasureLocations = newLocationList(respString) ;
+                return treasureLocations;   
+            } else {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
+                }
+                return newLocationList("");
+            }
+        } catch (final IOException e) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "IOException when getting authtoken", e);
+            }
+ 
+            return newLocationList("");
+        } finally {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "getAuthtoken completing");
+            }
+        }
+    }
+	
+    private locationList newLocationList(String JSONString) {
+    	locationList mylocationList = new locationList();
+    	try {
+    		JSONObject obj = new JSONObject(JSONString);
+    		JSONArray jsonArray = obj.getJSONArray("locations");
+    		
+    		int size = jsonArray.length();
+    		if (size > 0) {
+	    		for (int i = 0; i < size; i++) {
+	    			JSONObject another_json_object = jsonArray.getJSONObject(i);
+	    	    	location l = new location();
+	    			l.setLat(another_json_object.getString("lat"));
+	    			l.setLon(another_json_object.getString("lon"));
+	    	    	mylocationList.addLocation(l);
+	    		}
+    		}
+    	}
+    	catch (Exception je) {
+    		// catch?
+    	}
+    	
+    	return mylocationList;
     }
     
     private static String convertStreamToString(InputStream is, boolean newline){
@@ -190,7 +283,7 @@ public class NetworkTools {
     	return sb.toString();
     }
     
-    private boolean connectionResult(String JSONString) {
+    private static boolean connectionResult(String JSONString) {
     	String strResult = "false";
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -210,5 +303,26 @@ public class NetworkTools {
     	
     	return Boolean.parseBoolean(strResult);
     }
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendResult(final Boolean result, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((account) context).onAuthenticationResult(result);
+            }
+        });
+    }
+
       
 }
