@@ -1,9 +1,9 @@
 package geoarmy.android;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-
+import geoarmy.android.locationList;
+import geoarmy.android.CurrentLocation;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
@@ -32,6 +32,7 @@ public class geocacheListActivity extends ListActivity {
 	  R.drawable.blip,R.drawable.center_marker_male,R.drawable.head_bubble,
 	  R.drawable.androidmarker
 	};
+	static final locationList locations = CurrentLocation.getCurrentLocationList();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -40,9 +41,11 @@ public class geocacheListActivity extends ListActivity {
 	mInflater = (LayoutInflater) getSystemService(
 	Activity.LAYOUT_INFLATER_SERVICE);
 	data = new Vector<RowData>();
-	for(int i=0;i<title.length;i++){
+	location localLocation = new location();
+	for(int i=0;i<locations.length();i++){
 	try {
-	 	rd = new RowData(i,title[i],detail[i]);
+		
+	 	rd = new RowData(i,localLocation.getLat().toString(),localLocation.getLon().toString());
 	    } catch (ParseException e) {
 	    	e.printStackTrace();
 	   }

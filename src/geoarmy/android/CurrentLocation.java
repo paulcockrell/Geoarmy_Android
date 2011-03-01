@@ -5,10 +5,8 @@ import java.util.List;
 
 import geoarmy.android.locationList;
 import geoarmy.android.location;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -21,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -48,6 +47,9 @@ public class CurrentLocation extends MapActivity {
 	private static final int SHOW_ID   = R.id.geocacheshow;
     private ProgressDialog m_ProgressDialog = null; 
     
+    public static locationList currentLocationList;
+    final Context context = CurrentLocation.this;
+    
 	/** preference variables **/
 	private SharedPreferences prefs = null;
 	public static final String PREFERENCESNAME = "GeocacheResponder";
@@ -59,7 +61,14 @@ public class CurrentLocation extends MapActivity {
         super.onCreate(bundle);
        
         setContentView(R.layout.main); // bind the layout to the activity
-
+        /** Check if gps is enabled, if not prompt the user to enable it **/
+        if (!NetworkTools.gpsEnabled(context)) {
+        	MessageTools.createGpsDisabledAlert(CurrentLocation.this);
+        }
+        
+        /** Set up GPS pinger **/
+        setGPSPing();
+        
         // lat-lng text
         txt_lng = (TextView) findViewById(R.id.location_text_lng);
         txt_lat = (TextView) findViewById(R.id.location_text_lat); 
@@ -79,6 +88,15 @@ public class CurrentLocation extends MapActivity {
               
         // Now everything is initialised, lets draw the markers.
         getGeocaches();
+    }
+    
+    public void setGPSPing() {
+    	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, new GeoUpdateHandler());
+    }
+    
+    public static locationList getCurrentLocationList() {
+    	return currentLocationList;
     }
     
 	public void loadPreferences() {
@@ -147,12 +165,12 @@ public class CurrentLocation extends MapActivity {
 	}
     
     public void onGeocachesResult(locationList mylocationList) {
-    	drawGeocaches(mylocationList);
+    	currentLocationList = mylocationList;
+    	drawGeocaches(currentLocationList);
     	m_ProgressDialog.dismiss();
     }
     
     public void onNetworkError(String error) {
-    	final Context context = CurrentLocation.this;
     	m_ProgressDialog.dismiss();
     	MessageTools.alert(error, context);
     }
@@ -161,7 +179,6 @@ public class CurrentLocation extends MapActivity {
         m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
                 "Please wait...", "Retrieving geocache data ...", true);
         final Handler mHandler = new Handler();
-    	final Context context = CurrentLocation.this;
     	double parsedLat = latitude;
     	parsedLat = parsedLat / 1000000;
     	double parsedLon = longitude;
@@ -217,12 +234,13 @@ public class CurrentLocation extends MapActivity {
         hunterOverlay.addOverlay(overlayitem);
         mapOverlays.add(hunterOverlay); // add new marker
         mapController.setCenter(point);
-        
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new GeoUpdateHandler());
-
     }
     
+	public void getGPS() {
+        LocationManager locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new GeoUpdateHandler());
+	}
+	
     @SuppressWarnings("unused")
 	private final void hideMenu() {
     	

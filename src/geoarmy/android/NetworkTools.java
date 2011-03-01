@@ -29,9 +29,11 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import geoarmy.android.account;
+import geoarmy.android.CurrentLocation.GeoUpdateHandler;
 
 
 import android.content.Context;
+import android.location.LocationManager;
 import android.os.Handler;
 import android.util.Log;
 
@@ -395,5 +397,8 @@ public class NetworkTools {
         });
     }
 
-      
+	public static boolean gpsEnabled(Context context) {
+    	LocationManager locManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);  
+    	return locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+	}
 }
