@@ -53,5 +53,11 @@
 		android:text="Save"
 		android:onClick="">
 	</Button>
-
+	
+	<TextView android:id="@+id/lbl_debug"
+			        	android:textStyle="bold"
+			        	android:layout_width="fill_parent"
+			        	android:layout_height="wrap_content"
+			        	android:text=" " 
+   	/>
 </LinearLayout>

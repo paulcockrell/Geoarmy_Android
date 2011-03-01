@@ -5,8 +5,10 @@ import java.util.List;
 
 import geoarmy.android.locationList;
 import geoarmy.android.location;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -149,9 +151,15 @@ public class CurrentLocation extends MapActivity {
     	m_ProgressDialog.dismiss();
     }
     
+    public void onNetworkError(String error) {
+    	final Context context = CurrentLocation.this;
+    	m_ProgressDialog.dismiss();
+    	MessageTools.alert(error, context);
+    }
+    
     private final void getGeocaches() {
         m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
-                "Please wait...", "Retrieving data ...", true);
+                "Please wait...", "Retrieving geocache data ...", true);
         final Handler mHandler = new Handler();
     	final Context context = CurrentLocation.this;
     	double parsedLat = latitude;

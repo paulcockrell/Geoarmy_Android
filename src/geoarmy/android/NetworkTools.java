@@ -16,11 +16,16 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.params.ConnManagerParams;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.CookieSpec;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import geoarmy.android.account;
@@ -36,7 +41,8 @@ public class NetworkTools {
     private static final String TAG = "NetworkUtilities";
 	private static String tokenUrl = "login/get_auth_token";
 	public static final String BASEURL = "http://www.geoarmy.net/";
-	
+    public static HttpContext localContext = new BasicHttpContext();
+    
 	public NetworkTools() {}
 	
     /**
@@ -104,19 +110,16 @@ public class NetworkTools {
                     Log.v(TAG, "Successful authentication");
                 }
                 return respString;
-                
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
-                //sendResult(false, handler, context);
                 return respString;
             }
         } catch (final IOException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "IOException when getting authtoken", e);
             }
-            //sendResult(false, handler, context);
             return "false";
         } finally {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -161,28 +164,35 @@ public class NetworkTools {
         maybeCreateHttpClient();
 
 	    try {
-            resp = mHttpClient.execute(post);
+            resp = mHttpClient.execute(post, localContext);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Successful authentication");
                 }
+                /*CookieOrigin cookieOrigin = (CookieOrigin) localContext.getAttribute(
+                        ClientContext.COOKIE_ORIGIN);
+                CookieSpec cookieSpec = (CookieSpec) localContext.getAttribute(
+                        ClientContext.COOKIE_SPEC);
+                String cookieString = cookieOrigin + " ---- " + cookieSpec;*/
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
-                sendResult(connectionResult(respString), handler, context);   
+                sendResult(connectionResult(respString), handler, context);
+                //sendCookieResult(cookieString, handler, context);
                 return true;
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
+                sendNetworkError("Error authenticating", handler, context);
                 return false;
             }
         } catch (final IOException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "IOException when getting authtoken", e);
             }
- 
+            sendNetworkError("IO Exception when authenticating", handler, context);
             return false;
         } finally {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -227,13 +237,14 @@ public class NetworkTools {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
+                sendNetworkError("Error getting geocache data", handler, context);
                 return false;
             }
         } catch (final IOException e) {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "IOException when getting authtoken", e);
             }
- 
+            sendNetworkError("IO Exception when getting geocache data", handler, context);
             return false;
         } finally {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
@@ -348,6 +359,38 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((CurrentLocation) context).onGeocachesResult(result);
+            }
+        });
+    }
+    
+    private static void sendNetworkError(final String result, final Handler handler,
+            final Context context) {
+            if (handler == null || context == null) {
+                return;
+            }
+            handler.post(new Runnable() {
+                public void run() {
+                    ((CurrentLocation) context).onNetworkError(result);
+                }
+            });
+        }
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendCookieResult(final String result, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((account) context).onCookieResult(result);
             }
         });
     }

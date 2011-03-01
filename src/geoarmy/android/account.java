@@ -102,4 +102,14 @@ public class account extends Activity {
     	}
     	m_ProgressDialog.dismiss();
     }
+    
+    public void onCookieResult(String result) {
+    	final TextView test = (TextView) findViewById(R.id.lbl_debug);
+    	if (result.length()>0) {
+    		test.setText(result);
+    	} else {
+    		test.setText("Err no cookie data yo!");
+    	}
+    	m_ProgressDialog.dismiss();
+    }
 }
