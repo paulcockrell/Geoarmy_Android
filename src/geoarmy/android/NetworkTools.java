@@ -266,6 +266,8 @@ public class NetworkTools {
 	    		for (int i = 0; i < size; i++) {
 	    			JSONObject another_json_object = jsonArray.getJSONObject(i);
 	    	    	location l = new location();
+	    	    	l.setId(Integer.parseInt(another_json_object.getString("id").trim()));
+	    	    	l.setName(another_json_object.getString("name"));
 	    			l.setLat(another_json_object.getString("lat"));
 	    			l.setLon(another_json_object.getString("lon"));
 	    	    	mylocationList.addLocation(l);

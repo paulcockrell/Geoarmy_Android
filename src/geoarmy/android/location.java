@@ -2,14 +2,34 @@ package geoarmy.android;
 
 public class location {
 
+	private Integer id;
+	private String name;
 	private String lat;
 	private String lon;
 	
 	public location() {}
 	
-	public location(String lat, String lon) {
+	public location(Integer id, String name, String lat, String lon) {
+		this.id  = id;
+		this.name = name;
 		this.lat = lat;
 		this.lon = lon;
+	}
+	
+	public void setId(Integer id) {
+		this.id = id;
+	}
+	
+	public Integer getId() {
+		return id;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public void setLat(String lat) {
