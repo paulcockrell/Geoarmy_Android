@@ -1,11 +1,10 @@
 package geoarmy.android;
 
+import geoarmy.android.UserPreferences;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -15,13 +14,10 @@ import android.widget.TextView;
 
 public class account extends Activity {
 	 public static final String TAG = "account";
-	 private SharedPreferences prefs = null;
-	 private Editor editor = null;
 	 private ProgressDialog m_ProgressDialog = null;
-	 public static final String BASEURL = "http://www.geoarmy.net/";
 	 public static final String USERNAME = "username";
 	 public static final String PASSWORD = "password";
-	 public static final String PREFERENCESNAME = "GeocacheResponder";
+
 	/**
 	 * Called when the activity is first created. Responsible for initialising the UI.
 	 */
@@ -37,11 +33,8 @@ public class account extends Activity {
 	    final Button   saveButton    = (Button) findViewById(R.id.saveButton);
 	    final Handler mHandler = new Handler();
 	    
-	    prefs = this.getSharedPreferences(PREFERENCESNAME, Context.MODE_PRIVATE);
-	    editor = prefs.edit();
-	    
-	    userName.setText(prefs.getString(account.USERNAME, "user"));
-	    password.setText(prefs.getString(account.PASSWORD, "password"));
+	    userName.setText(UserPreferences.getUsername(account.this));
+	    password.setText(UserPreferences.getPassword(account.this));
 	    
 	    saveButton.setOnClickListener(new Button.OnClickListener() {
 	    	public void onClick(View v) {
@@ -60,10 +53,9 @@ public class account extends Activity {
 	    				}
 	    				
 	    				/* store data in a shared preference */
-	    				editor.putString(account.USERNAME, user);
-	    				editor.putString(account.PASSWORD, pword);
-	    				editor.commit();
-	    				
+	    				UserPreferences.setUsername(user);
+	    				UserPreferences.setPassword(pword);
+   				
 	    				finish();
 	    		} catch (Exception e) {
 	    			/* Oppps!!! maybe log message */
@@ -81,9 +73,8 @@ public class account extends Activity {
 	    			// get variables that are in the text fields, they may not have been saved yet as we are running a test
     				String username      = userName.getText().toString();
     				String passwd        = password.getText().toString();
-    				String commandUrl    = "login/login";
  
-	    			NetworkTools.authenticate(BASEURL + commandUrl, username, passwd, mHandler, context);    				    				
+	    			NetworkTools.attemptAuth(username, passwd, mHandler, context);    				    				
 	    		} catch (Exception e) {
 	    			// Oppps!!! maybe log message 
 	    			test.setText("Error performing test, please try again");

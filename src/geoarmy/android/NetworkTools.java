@@ -16,10 +16,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.params.ConnManagerParams;
-import org.apache.http.cookie.CookieOrigin;
-import org.apache.http.cookie.CookieSpec;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.HttpConnectionParams;
@@ -29,9 +26,6 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import geoarmy.android.account;
-import geoarmy.android.CurrentLocation.GeoUpdateHandler;
-
-
 import android.content.Context;
 import android.location.LocationManager;
 import android.os.Handler;
@@ -40,9 +34,11 @@ import android.util.Log;
 public class NetworkTools {
     private static HttpClient mHttpClient;
     public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
-    private static final String TAG = "NetworkUtilities";
-	private static String tokenUrl = "login/get_auth_token";
-	public static final String BASEURL = "http://www.geoarmy.net/";
+    private static final String TAG        = "NetworkUtilities";
+	private static String tokenUrl         = "login/get_auth_token";
+	private static String authenticateURL  = "login/login";
+	private static String geocacheURL      = "geocaches";
+	public static final String BASEURL     = "http://www.geoarmy.net/";
     public static HttpContext localContext = new BasicHttpContext();
     
 	public NetworkTools() {}
@@ -88,7 +84,7 @@ public class NetworkTools {
 	   	
         String respString;
     	// post vars
-    	final ArrayList<NameValuePair> params = new ArrayList();
+    	final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     	HttpEntity entity = null;
         try {
             entity = new UrlEncodedFormEntity(params);
@@ -130,25 +126,24 @@ public class NetworkTools {
         }
 	}
 	  
-    public static Thread attemptAuth(final String url,
-        final String name, final String password, final String token, final Handler handler, final Context context) {
+    public static Thread attemptAuth(final String name, final String password, final Handler handler, final Context context) {
             final Runnable runnable = new Runnable() {
                 public void run() {
-                    authenticate(url, name, password, handler, context);
+                    authenticate(name, password, handler, context, true);
                 }
             };
             // run on background thread.
             return NetworkTools.performOnBackgroundThread(runnable);
         }
 
-	public static boolean authenticate(String url, String name, String password, Handler handler, final Context context) {
+	public static boolean authenticate(String name, String password, Handler handler, final Context context, boolean onSuccessMsg) {
     	final HttpResponse resp;
         String respString;
-        
+        String url = BASEURL + authenticateURL;
         //get token
 		String token = getToken();
     	// post vars
-    	final ArrayList<NameValuePair> params = new ArrayList();
+    	final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
     	params.add(new BasicNameValuePair("authenticity_token", token));
     	params.add(new BasicNameValuePair("name", name));
     	params.add(new BasicNameValuePair("password", password));
@@ -172,22 +167,18 @@ public class NetworkTools {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Successful authentication");
                 }
-                /*CookieOrigin cookieOrigin = (CookieOrigin) localContext.getAttribute(
-                        ClientContext.COOKIE_ORIGIN);
-                CookieSpec cookieSpec = (CookieSpec) localContext.getAttribute(
-                        ClientContext.COOKIE_SPEC);
-                String cookieString = cookieOrigin + " ---- " + cookieSpec;*/
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
-                sendResult(connectionResult(respString), handler, context);
-                //sendCookieResult(cookieString, handler, context);
+                if (onSuccessMsg) {
+                	sendResult(connectionResult(respString), handler, context);
+                }
                 return true;
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
-                sendNetworkError("Error authenticating", handler, context);
+                sendNetworkError("Error authenticating, check you username and password", handler, context);
                 return false;
             }
         } catch (final IOException e) {
@@ -203,10 +194,11 @@ public class NetworkTools {
         }
     }
     
-	public static boolean getLocations(String url, double latitude, double longitude, Handler handler, Context context) {
+	public static boolean getLocations(double latitude, double longitude, Handler handler, Context context) {
 		locationList treasureLocations = new locationList();
     	final HttpResponse resp;
         String respString;
+        String url = BASEURL + geocacheURL;
         // get token
         String token = getToken();
     	// post vars
@@ -369,38 +361,18 @@ public class NetworkTools {
     
     private static void sendNetworkError(final String result, final Handler handler,
             final Context context) {
-            if (handler == null || context == null) {
-                return;
-            }
-            handler.post(new Runnable() {
-                public void run() {
-                    ((CurrentLocation) context).onNetworkError(result);
-                }
-            });
-        }
-    
-    /**
-     * Sends the authentication response from server back to the caller main UI
-     * thread through its handler.
-     * 
-     * @param result The boolean holding authentication result
-     * @param handler The main UI thread's handler instance.
-     * @param context The caller Activity's context.
-     */
-    private static void sendCookieResult(final String result, final Handler handler,
-        final Context context) {
         if (handler == null || context == null) {
             return;
         }
         handler.post(new Runnable() {
             public void run() {
-                ((account) context).onCookieResult(result);
+                ((CurrentLocation) context).onNetworkError(result);
             }
         });
     }
-
+    
 	public static boolean gpsEnabled(Context context) {
-    	LocationManager locManager = (LocationManager) context.getSystemService(context.LOCATION_SERVICE);  
+    	LocationManager locManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);  
     	return locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	}
 }

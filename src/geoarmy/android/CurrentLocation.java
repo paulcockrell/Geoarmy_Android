@@ -8,7 +8,6 @@ import geoarmy.android.location;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -19,8 +18,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -49,12 +46,7 @@ public class CurrentLocation extends MapActivity {
     
     public static locationList currentLocationList;
     final Context context = CurrentLocation.this;
-    
-	/** preference variables **/
-	private SharedPreferences prefs = null;
-	public static final String PREFERENCESNAME = "GeocacheResponder";
-	private static final String commandUrl = "geocaches";
-	public static final String BASEURL = "http://www.geoarmy.net/";
+	final Handler mHandler = new Handler();
 	
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
@@ -85,9 +77,18 @@ public class CurrentLocation extends MapActivity {
         mapController.setZoom(17);
         mapView.setSatellite(false);
         mapView.invalidate();
-              
-        // Now everything is initialised, lets draw the markers.
-        getGeocaches();
+      
+        String username = UserPreferences.getUsername(context);
+        String password = UserPreferences.getPassword(context);
+        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
+                "Please wait...", "Loging in to your account...", true);
+        if (NetworkTools.authenticate(username, password, mHandler, context, false)) {
+        	m_ProgressDialog.dismiss();
+        	// Now everything is initialised, lets draw the markers.
+        	getGeocaches();
+        } else {
+        	MessageTools.alert("Failed to log into your account", context);
+        }
     }
     
     public void setGPSPing() {
@@ -98,12 +99,6 @@ public class CurrentLocation extends MapActivity {
     public static locationList getCurrentLocationList() {
     	return currentLocationList;
     }
-    
-	public void loadPreferences() {
-		prefs = this.getSharedPreferences(PREFERENCESNAME, Context.MODE_PRIVATE);
-		prefs.getString(account.USERNAME, "user");
-		prefs.getString(account.PASSWORD, "password");
-	}
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,14 +179,11 @@ public class CurrentLocation extends MapActivity {
     	double parsedLon = longitude;
     	parsedLon = parsedLon / 1000000;
     	//get geocache points	
-    	NetworkTools.getLocations(BASEURL + commandUrl, parsedLat, parsedLon, mHandler, context);
+    	NetworkTools.getLocations(parsedLat, parsedLon, mHandler, context);
     }
     
     private final void drawGeocaches(locationList mylocationList) {
         List<Overlay> mapOverlays = mapView.getOverlays();
-        
-        // Load preferences
-        loadPreferences();
               
         //Add geocache markers
         //
@@ -237,10 +229,20 @@ public class CurrentLocation extends MapActivity {
     }
     
 	public void getGPS() {
-        LocationManager locationManager = (LocationManager) getSystemService(context.LOCATION_SERVICE);
+        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new GeoUpdateHandler());
 	}
 	
+    public void onAuthenticationResult(boolean result) {
+    	final TextView test = (TextView) findViewById(R.id.lbl_test);
+    	if (result) {
+    		test.setText("Account details have been verified, please save the changes.");
+    	} else {
+    		test.setText("Invalid account details, please try again.");
+    	}
+    	m_ProgressDialog.dismiss();
+    }
+    
     @SuppressWarnings("unused")
 	private final void hideMenu() {
     	

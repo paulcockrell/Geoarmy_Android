@@ -23,10 +23,10 @@ public class geocacheListActivity extends ListActivity {
 	private LayoutInflater mInflater;
 	private Vector<RowData> data;
 	RowData rd;
-	private Integer[] imgid = {
+	/*private Integer[] imgid = {
 	  R.drawable.ruby,R.drawable.center_marker_male,R.drawable.head_bubble,
 	  R.drawable.androidmarker
-	};
+	};*/
 	
 	/** get geocache list **/
 	static final locationList locations = CurrentLocation.getCurrentLocationList();
