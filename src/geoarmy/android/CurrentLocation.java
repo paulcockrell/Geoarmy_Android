@@ -84,10 +84,10 @@ public class CurrentLocation extends MapActivity {
         String password = UserPreferences.getPassword(context);
         
         NetworkTools.authenticate(username, password, mHandler, context, false);
-        Log.d(TAG, "Debug msg from onCreate()");
         if (UserPreferences.getLoggedIn(context)) {
         	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
         	getGeocaches();
+        	drawGeocaches(currentLocationList);
         } else {
         	Toast.makeText(context, "Failed to log into your account", Toast.LENGTH_LONG).show();
         }
@@ -175,8 +175,10 @@ public class CurrentLocation extends MapActivity {
     }
     
     public void onNetworkError(String error) {
-    	m_ProgressDialog.dismiss();
-    	MessageTools.alert(error, context);
+    	if (!(m_ProgressDialog == null) && m_ProgressDialog.isShowing()) {
+    		m_ProgressDialog.dismiss();
+    	}
+    	MessageTools.alert("Sorry a network error has occured", context);
     }
     
     private final void getGeocaches() {
@@ -200,7 +202,9 @@ public class CurrentLocation extends MapActivity {
     }
     
     private final void drawGeocaches(locationList mylocationList) {
-    	
+    	 if (mylocationList == null) {
+    		 return;
+    	 }
         List<Overlay> mapOverlays = mapView.getOverlays();
         mapOverlays.clear();
         //Add geocache markers
@@ -216,6 +220,9 @@ public class CurrentLocation extends MapActivity {
     	
     	int len = mylocationList.length();
     	
+    	if (len < 0) {
+    		return;
+    	}
     	ArrayList<location> localArray = mylocationList.getLocations();
     	location localLocation = new location();
     	
