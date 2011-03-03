@@ -36,6 +36,7 @@ public class CurrentLocation extends MapActivity {
 	TextView txt_lat, txt_lng, txt_geocount, txt_gps;
 	int latitude = 51618120, longitude = -1279020;
 	String currentStatus;
+	UserPreferences userPrefs;
 	
 	/** Menu references **/
 	private static final int ACCOUNT_ID = R.id.account;
@@ -57,7 +58,7 @@ public class CurrentLocation extends MapActivity {
         setContentView(R.layout.main); // bind the layout to the activity
         /** Check if gps is enabled, if not prompt the user to enable it **/
         if (!NetworkTools.gpsEnabled(context)) {
-        	MessageTools.createGpsDisabledAlert(CurrentLocation.this);
+        	MessageTools.createGpsDisabledAlert(context);
         }
         
         /** Set up GPS pinger **/
@@ -82,10 +83,11 @@ public class CurrentLocation extends MapActivity {
       
         String username = UserPreferences.getUsername(context);
         String password = UserPreferences.getPassword(context);
-
-        if (NetworkTools.authenticate(username, password, mHandler, context, false)) {
+        
+        NetworkTools.authenticate(username, password, mHandler, context, false);
+        
+        if (UserPreferences.getLoggedIn(context)) {
         	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
-        	// Now everything is initialised, lets draw the markers.
         	getGeocaches();
         } else {
         	Toast.makeText(context, "Failed to log into your account", Toast.LENGTH_LONG).show();
@@ -171,21 +173,38 @@ public class CurrentLocation extends MapActivity {
     	MessageTools.alert(error, context);
     }
     
+    private void clearLocationList() {
+    	locationList myLocationList = getCurrentLocationList();
+        myLocationList.clearLocations();
+    	//drawGeocaches(myLocationList);
+    }
     private final void getGeocaches() {
-        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
-                "Please wait...", "Retrieving geocache data ...", true);
-        final Handler mHandler = new Handler();
-    	double parsedLat = latitude;
-    	parsedLat = parsedLat / 1000000;
-    	double parsedLon = longitude;
-    	parsedLon = parsedLon / 1000000;
-    	//get geocache points	
-    	NetworkTools.getLocations(parsedLat, parsedLon, mHandler, context);
+    	Toast.makeText(context, "Logged in? "+ UserPreferences.getLoggedIn(context) , Toast.LENGTH_LONG).show();
+    	/*
+    	if (!isLoggedIn) {
+    		clearLocationList();
+    		Toast.makeText(context, "You are not logged in", Toast.LENGTH_LONG).show();
+    		return;
+    	}
+    	if (NetworkTools.gpsEnabled(context)) {
+	        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
+	                "Please wait...", "Retrieving geocache data ...", true);
+	        final Handler mHandler = new Handler();
+	    	double parsedLat = latitude;
+	    	parsedLat = parsedLat / 1000000;
+	    	double parsedLon = longitude;
+	    	parsedLon = parsedLon / 1000000;
+	    	//get geocache points	
+	    	NetworkTools.getLocations(parsedLat, parsedLon, mHandler, context);
+    	} else {
+	    	Toast.makeText(context, "GPS is dissabled, please enable", Toast.LENGTH_LONG).show();
+    	}*/
     }
     
     private final void drawGeocaches(locationList mylocationList) {
+    	
         List<Overlay> mapOverlays = mapView.getOverlays();
-              
+        mapOverlays.clear();
         //Add geocache markers
         //
         Drawable treasurePin = this.getResources().getDrawable(R.drawable.ruby);
@@ -233,7 +252,7 @@ public class CurrentLocation extends MapActivity {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new GeoUpdateHandler());
 	}
-	
+	/*
     public void onAuthenticationResult(boolean result) {
     	final TextView test = (TextView) findViewById(R.id.lbl_test);
     	if (result) {
@@ -243,6 +262,7 @@ public class CurrentLocation extends MapActivity {
     	}
     	m_ProgressDialog.dismiss();
     }
+    */
     
     @SuppressWarnings("unused")
 	private final void hideMenu() {
@@ -285,7 +305,7 @@ public class CurrentLocation extends MapActivity {
             mapOverlays.add(hunterOverlay); // add new marker
 			mapView.invalidate();
     	}
-    	
+    	  	
     	public void onProviderDisabled(String provider) {
     	}
     	

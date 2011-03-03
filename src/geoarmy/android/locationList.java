@@ -24,6 +24,10 @@ public class locationList {
 		this.locations.add(location);
 	}
 	
+	public void clearLocations() {
+		this.locations.clear();
+	}
+	
 	public int length() {
 		return this.locations.size();
 	}

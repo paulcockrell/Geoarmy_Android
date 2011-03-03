@@ -140,7 +140,7 @@ public class NetworkTools {
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + authenticateURL;
-        boolean isLoggedIn;
+        boolean isLoggedIn= false;
         //get token
 		String token = getToken();
     	// post vars
@@ -179,6 +179,7 @@ public class NetworkTools {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
                 }
+                UserPreferences.setLoggedIn(false);
                 sendNetworkError("Error authenticating, check you username and password", handler, context);
                 return false;
             }
@@ -186,6 +187,7 @@ public class NetworkTools {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "IOException when getting authtoken", e);
             }
+            UserPreferences.setLoggedIn(false);
             sendNetworkError("IO Exception when authenticating", handler, context);
             return false;
         } finally {
@@ -193,6 +195,7 @@ public class NetworkTools {
                 Log.v(TAG, "getAuthtoken completing");
             }
         }
+        UserPreferences.setLoggedIn(isLoggedIn);
 		return isLoggedIn;
     }
     

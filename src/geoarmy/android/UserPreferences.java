@@ -34,4 +34,14 @@ public class UserPreferences {
 		editor.commit();
     }
 
+	public static void setLoggedIn(boolean loggedIn) {
+    	editor = prefs.edit();
+    	editor.putBoolean(account.LOGGEDIN, loggedIn);
+		editor.commit();
+	}
+
+	public static boolean getLoggedIn(Context context) {
+		prefs = context.getSharedPreferences(PREFERENCESNAME, Context.MODE_PRIVATE);
+    	return prefs.getBoolean(account.LOGGEDIN, false);
+	}
 }
