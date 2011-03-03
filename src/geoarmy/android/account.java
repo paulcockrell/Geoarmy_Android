@@ -74,7 +74,7 @@ public class account extends Activity {
     				String username      = userName.getText().toString();
     				String passwd        = password.getText().toString();
  
-	    			NetworkTools.attemptAuth(username, passwd, mHandler, context);    				    				
+	    			NetworkTools.attemptAuth(username, passwd, mHandler, context, true);    				    				
 	    		} catch (Exception e) {
 	    			// Oppps!!! maybe log message 
 	    			test.setText("Error performing test, please try again");

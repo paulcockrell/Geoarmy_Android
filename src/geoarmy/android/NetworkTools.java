@@ -126,10 +126,10 @@ public class NetworkTools {
         }
 	}
 	  
-    public static Thread attemptAuth(final String name, final String password, final Handler handler, final Context context) {
+    public static Thread attemptAuth(final String name, final String password, final Handler handler, final Context context, final boolean onSuccessMsg) {
             final Runnable runnable = new Runnable() {
                 public void run() {
-                    authenticate(name, password, handler, context, true);
+                    authenticate(name, password, handler, context, onSuccessMsg);
                 }
             };
             // run on background thread.
@@ -140,6 +140,7 @@ public class NetworkTools {
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + authenticateURL;
+        boolean isLoggedIn;
         //get token
 		String token = getToken();
     	// post vars
@@ -159,7 +160,7 @@ public class NetworkTools {
         post.addHeader(entity.getContentType());
         post.setEntity(entity);
         maybeCreateHttpClient();
-
+        
 	    try {
             resp = mHttpClient.execute(post, localContext);
                         
@@ -170,10 +171,10 @@ public class NetworkTools {
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
+                isLoggedIn = connectionResult(respString);
                 if (onSuccessMsg) {
-                	sendResult(connectionResult(respString), handler, context);
-                }
-                return true;
+                	sendResult(isLoggedIn, handler, context);
+                } 
             } else {
                 if (Log.isLoggable(TAG, Log.VERBOSE)) {
                     Log.v(TAG, "Error authenticating" + resp.getStatusLine());
@@ -192,6 +193,7 @@ public class NetworkTools {
                 Log.v(TAG, "getAuthtoken completing");
             }
         }
+		return isLoggedIn;
     }
     
 	public static boolean getLocations(double latitude, double longitude, Handler handler, Context context) {

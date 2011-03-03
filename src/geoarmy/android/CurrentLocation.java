@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
@@ -66,7 +68,7 @@ public class CurrentLocation extends MapActivity {
         txt_lat = (TextView) findViewById(R.id.location_text_lat); 
         // geocache counter
         txt_geocount = (TextView) findViewById(R.id.status_text_00);
-        // satelite text
+        // Satellite text
         txt_gps = (TextView) findViewById(R.id.status_text_01);
         
         // create a map view
@@ -80,14 +82,13 @@ public class CurrentLocation extends MapActivity {
       
         String username = UserPreferences.getUsername(context);
         String password = UserPreferences.getPassword(context);
-        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
-                "Please wait...", "Loging in to your account...", true);
+
         if (NetworkTools.authenticate(username, password, mHandler, context, false)) {
-        	m_ProgressDialog.dismiss();
+        	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
         	// Now everything is initialised, lets draw the markers.
         	getGeocaches();
         } else {
-        	MessageTools.alert("Failed to log into your account", context);
+        	Toast.makeText(context, "Failed to log into your account", Toast.LENGTH_LONG).show();
         }
     }
     
