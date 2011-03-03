@@ -6,14 +6,16 @@ public class location {
 	private String name;
 	private String lat;
 	private String lon;
+	private String notes;
 	
 	public location() {}
 	
-	public location(Integer id, String name, String lat, String lon) {
+	public location(Integer id, String name, String lat, String lon, String notes) {
 		this.id  = id;
 		this.name = name;
 		this.lat = lat;
 		this.lon = lon;
+		this.notes = notes;
 	}
 	
 	public void setId(Integer id) {
@@ -46,6 +48,14 @@ public class location {
 	
 	public String getLon() {
 		return lon;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+	
+	public String getNotes() {
+		return notes;
 	}
 	
 }

@@ -14,7 +14,6 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -45,11 +44,9 @@ public class CurrentLocation extends MapActivity {
 	private static final int REFRESH_ID = R.id.refresh;
 	private static final int CENTER_ID  = R.id.center;
 	private static final int LIST_ID    = R.id.geocachelist;
-	private static final int SHOW_ID    = R.id.geocacheshow;
     private ProgressDialog m_ProgressDialog = null; 
-    private static final String TAG     = "NetworkUtilities";
     
-    public static locationList currentLocationList;
+    public static locationList currentLocationList = new locationList();
     final Context context = CurrentLocation.this;
 	final Handler mHandler = new Handler();
 	
@@ -106,6 +103,7 @@ public class CurrentLocation extends MapActivity {
     }
     
     public static locationList getCurrentLocationList() {
+    	currentLocationList.length();
     	return currentLocationList;
     }
     
@@ -122,7 +120,6 @@ public class CurrentLocation extends MapActivity {
     	switch (item.getItemId()) {
         case ACCOUNT_ID:
             editAccount();
-            //finish();
             break;
         case RADAR_ID:
         	compassView();
@@ -136,9 +133,6 @@ public class CurrentLocation extends MapActivity {
         case LIST_ID:
         	listView();
         	break;
-        case SHOW_ID:
-        	showView();
-        	break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -147,12 +141,7 @@ public class CurrentLocation extends MapActivity {
     	Intent i = new Intent(this, geocacheListActivity.class);
     	startActivity(i);
     }
-    
-    private final void showView() {
-    	Intent i = new Intent(this, geocacheShow.class);
-    	startActivity(i);
-    }
-    
+     
     private final void editAccount() {
     	Intent i = new Intent(this, account.class);
     	startActivity(i);
@@ -169,6 +158,7 @@ public class CurrentLocation extends MapActivity {
 	}
     
     public void onGeocachesResult(locationList mylocationList) {
+    	currentLocationList.clearLocations();
     	currentLocationList = mylocationList;
     	drawGeocaches(currentLocationList);
     	m_ProgressDialog.dismiss();
@@ -271,7 +261,6 @@ public class CurrentLocation extends MapActivity {
         OverlayItem overlayitem = new OverlayItem(point, "Hello GeoArmy recruit", "Point: " + point);
         hunterOverlay.addOverlay(overlayitem);
         mapOverlays.add(hunterOverlay); // add new marker
-        Log.d(TAG, "------>"+mapOverlays.toString());
 	}
     
     public class GeoUpdateHandler implements LocationListener {

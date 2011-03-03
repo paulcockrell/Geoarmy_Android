@@ -9,4 +9,5 @@
 <string name="number_of_geocaches">No geocaches</string>
 <string name="geocacheListTitle">Geocache list</string>
 <string name="geocacheShowTitle">Show geocache</string>
+<string name="geocacheMenuTitle">View geocache details</string>
 </resources>

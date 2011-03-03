@@ -267,12 +267,12 @@ public class NetworkTools {
 	    	    	l.setName(another_json_object.getString("name"));
 	    			l.setLat(another_json_object.getString("lat"));
 	    			l.setLon(another_json_object.getString("lon"));
+	    			l.setNotes(another_json_object.getString("notes"));
 	    	    	mylocationList.addLocation(l);
 	    		}
     		}
     	}
     	catch (Exception je) {
-    		// catch?
     	}
     	
     	return mylocationList;

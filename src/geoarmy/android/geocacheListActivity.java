@@ -8,8 +8,10 @@ import geoarmy.android.CurrentLocation;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ParseException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +19,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class geocacheListActivity extends ListActivity {
 	private LayoutInflater mInflater;
 	private Vector<RowData> data;
+	private static String TAG = "geocacheListActivity";
 	RowData rd;
 	/*private Integer[] imgid = {
 	  R.drawable.ruby,R.drawable.center_marker_male,R.drawable.head_bubble,
@@ -29,7 +31,7 @@ public class geocacheListActivity extends ListActivity {
 	};*/
 	
 	/** get geocache list **/
-	static final locationList locations = CurrentLocation.getCurrentLocationList();
+	locationList locations = CurrentLocation.getCurrentLocationList();
 	ArrayList<location> localArray = locations.getLocations();
 	
 	@Override
@@ -49,7 +51,7 @@ public class geocacheListActivity extends ListActivity {
 		  lat =localLocation.getLat();
 		  lon =localLocation.getLon();
 		  title = "[" + id + "] " + name;
-		  details = lat + " " + lon;
+		  details = "Lat: " + lat + ", Lon: " + lon;
 	 	  rd = new RowData(i,title,details);
 	    } catch (ParseException e) {
 		  e.printStackTrace();
@@ -62,10 +64,24 @@ public class geocacheListActivity extends ListActivity {
 	  setListAdapter(adapter);
 	  getListView().setTextFilterEnabled(true);
 	}
-	
-	public void onListItemClick(ListView parent, View v, int position, long id) {        	
-	   Toast.makeText(getApplicationContext(), "You have selected "
-	                    +(position+1)+"th item",  Toast.LENGTH_SHORT).show();
+   
+    private final void showView(long id) {
+  		location localLocation = localArray.get((int) id);
+  		Log.d(TAG, "[[["+localLocation.getName()+"]]]");
+    	Bundle bundle = new Bundle();
+    	bundle.putString("gId", localLocation.getId().toString());
+    	bundle.putString("gLat", localLocation.getLat());
+    	bundle.putString("gLon", localLocation.getLon());
+    	bundle.putString("gName", localLocation.getName());
+    	bundle.putString("gNotes", localLocation.getNotes());
+    	Intent i = new Intent(this, geocacheShow.class);
+    	i.putExtras(bundle);
+    	startActivityForResult(i, 0);
+    	//startActivity(i);
+    }
+    
+	public void onListItemClick(ListView parent, View v, int position, long id) {       	
+	   showView(id);
 	}
 	
 	private class RowData {
