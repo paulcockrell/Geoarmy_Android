@@ -26,6 +26,6 @@ public class geocacheShow extends Activity {
 		this.geocacheName.setText("Name: " + gName);
 		this.geocacheLat.setText("Lat: " + gLat);
 		this.geocacheLon.setText("Lon: " + gLon);
-		this.geocacheNotes.setText("Lon: " + gNotes);
+		this.geocacheNotes.setText("Notes: " + gNotes);
 	}
 }
