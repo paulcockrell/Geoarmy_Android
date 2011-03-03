@@ -14,6 +14,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -40,12 +41,13 @@ public class CurrentLocation extends MapActivity {
 	
 	/** Menu references **/
 	private static final int ACCOUNT_ID = R.id.account;
-	private static final int RADAR_ID = R.id.compass;
+	private static final int RADAR_ID   = R.id.compass;
 	private static final int REFRESH_ID = R.id.refresh;
-	private static final int CENTER_ID = R.id.center;
-	private static final int LIST_ID   = R.id.geocachelist;
-	private static final int SHOW_ID   = R.id.geocacheshow;
+	private static final int CENTER_ID  = R.id.center;
+	private static final int LIST_ID    = R.id.geocachelist;
+	private static final int SHOW_ID    = R.id.geocacheshow;
     private ProgressDialog m_ProgressDialog = null; 
+    private static final String TAG     = "NetworkUtilities";
     
     public static locationList currentLocationList;
     final Context context = CurrentLocation.this;
@@ -56,10 +58,7 @@ public class CurrentLocation extends MapActivity {
         super.onCreate(bundle);
        
         setContentView(R.layout.main); // bind the layout to the activity
-        /** Check if gps is enabled, if not prompt the user to enable it **/
-        if (!NetworkTools.gpsEnabled(context)) {
-        	MessageTools.createGpsDisabledAlert(context);
-        }
+        enableGPS();
         
         /** Set up GPS pinger **/
         setGPSPing();
@@ -85,7 +84,7 @@ public class CurrentLocation extends MapActivity {
         String password = UserPreferences.getPassword(context);
         
         NetworkTools.authenticate(username, password, mHandler, context, false);
-        
+        Log.d(TAG, "Debug msg from onCreate()");
         if (UserPreferences.getLoggedIn(context)) {
         	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
         	getGeocaches();
@@ -94,9 +93,16 @@ public class CurrentLocation extends MapActivity {
         }
     }
     
+    public void enableGPS() {
+        /** Check if GPS is enabled, if not prompt the user to enable it **/
+        if (!NetworkTools.gpsEnabled(context)) {
+        	MessageTools.createGpsDisabledAlert(context);
+        }
+    }
+    
     public void setGPSPing() {
     	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, new GeoUpdateHandler());
+    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new GeoUpdateHandler());
     }
     
     public static locationList getCurrentLocationList() {
@@ -173,21 +179,13 @@ public class CurrentLocation extends MapActivity {
     	MessageTools.alert(error, context);
     }
     
-    private void clearLocationList() {
-    	locationList myLocationList = getCurrentLocationList();
-        myLocationList.clearLocations();
-    	//drawGeocaches(myLocationList);
-    }
     private final void getGeocaches() {
-    	Toast.makeText(context, "Logged in? "+ UserPreferences.getLoggedIn(context) , Toast.LENGTH_LONG).show();
-    	/*
-    	if (!isLoggedIn) {
-    		clearLocationList();
+    	if (!UserPreferences.getLoggedIn(context)) {
     		Toast.makeText(context, "You are not logged in", Toast.LENGTH_LONG).show();
     		return;
     	}
     	if (NetworkTools.gpsEnabled(context)) {
-	        m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
+	       m_ProgressDialog = ProgressDialog.show(CurrentLocation.this,    
 	                "Please wait...", "Retrieving geocache data ...", true);
 	        final Handler mHandler = new Handler();
 	    	double parsedLat = latitude;
@@ -197,8 +195,8 @@ public class CurrentLocation extends MapActivity {
 	    	//get geocache points	
 	    	NetworkTools.getLocations(parsedLat, parsedLon, mHandler, context);
     	} else {
-	    	Toast.makeText(context, "GPS is dissabled, please enable", Toast.LENGTH_LONG).show();
-    	}*/
+	    	enableGPS();
+    	}
     }
     
     private final void drawGeocaches(locationList mylocationList) {
@@ -230,39 +228,20 @@ public class CurrentLocation extends MapActivity {
     		myLon = (int) (Double.parseDouble(localLocation.getLon())*1E6);
     		treasurepoint = new GeoPoint(myLat, myLon);
 
-        	overlayTreasure = new OverlayItem(treasurepoint, "Treasure!", "Point: " + treasurepoint);
+        	overlayTreasure = new OverlayItem(treasurepoint, localLocation.getName(), "Point: " + treasurepoint);
         	treasureOverlay.addOverlay(overlayTreasure);
         	mapOverlays.add(treasureOverlay); // add new marker
          }
     	
-    	txt_geocount.setText("Goecache count: " + len);
-
-        //Add users marker
-        //
-        Drawable userPin = this.getResources().getDrawable(R.drawable.center_marker_male);
-        hunterOverlay = new DynamicItemizedOverlay(userPin, this);
-
-        OverlayItem overlayitem = new OverlayItem(point, "Hello Hunter", "Point: " + point);
-        hunterOverlay.addOverlay(overlayitem);
-        mapOverlays.add(hunterOverlay); // add new marker
+    	txt_geocount.setText("Geocache count: " + len);
+    	drawMarker(point);
         mapController.setCenter(point);
     }
     
 	public void getGPS() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, new GeoUpdateHandler());
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new GeoUpdateHandler());
 	}
-	/*
-    public void onAuthenticationResult(boolean result) {
-    	final TextView test = (TextView) findViewById(R.id.lbl_test);
-    	if (result) {
-    		test.setText("Account details have been verified, please save the changes.");
-    	} else {
-    		test.setText("Invalid account details, please try again.");
-    	}
-    	m_ProgressDialog.dismiss();
-    }
-    */
     
     @SuppressWarnings("unused")
 	private final void hideMenu() {
@@ -274,6 +253,20 @@ public class CurrentLocation extends MapActivity {
     	return false;
     }
     
+	private void drawMarker(GeoPoint point) {		
+		List<Overlay> mapOverlays = mapView.getOverlays();
+		int hunterIdx = mapOverlays.indexOf(hunterOverlay);
+		if (hunterIdx >= 0 && !mapOverlays.isEmpty()) {
+			mapOverlays.remove(hunterIdx);
+		}
+        Drawable userPin = context.getResources().getDrawable(R.drawable.center_marker_male);
+        hunterOverlay = new DynamicItemizedOverlay(userPin, context);
+        OverlayItem overlayitem = new OverlayItem(point, "Hello GeoArmy recruit", "Point: " + point);
+        hunterOverlay.addOverlay(overlayitem);
+        mapOverlays.add(hunterOverlay); // add new marker
+        Log.d(TAG, "------>"+mapOverlays.toString());
+	}
+    
     public class GeoUpdateHandler implements LocationListener {
        	
     	public void onLocationChanged(Location location) {
@@ -281,31 +274,22 @@ public class CurrentLocation extends MapActivity {
     		if (location != null) {
     			latitude = (int) (location.getLatitude()*1E6);
     			longitude = (int) (location.getLongitude()*1E6);
-    		} 
-    		GeoPoint point = new GeoPoint(latitude,longitude);
-
-    		String currentLat = "Lat: " + location.getLatitude();
-    		String currentLng = "Lng: " + location.getLongitude();
-    		txt_lat.setText(currentLat);
-    		txt_lng.setText(currentLng);
-    		
-    		currentStatus = "GPS: Active";
-    		txt_gps.setText(currentStatus);
-
-    		this.drawMarker(point);
-    		//mapController.animateTo(point); always keep hunter in middle of map
+    		 
+	    		GeoPoint point = new GeoPoint(latitude,longitude);
+	
+	    		String currentLat = "Lat: " + location.getLatitude();
+	    		String currentLng = "Lng: " + location.getLongitude();
+	    		txt_lat.setText(currentLat);
+	    		txt_lng.setText(currentLng);
+	    		
+	    		currentStatus = "GPS: Active";
+	    		txt_gps.setText(currentStatus);
+	
+	    		drawMarker(point);
+	    		//mapController.animateTo(point); always keep hunter in middle of map
+    		}
        	}
-
-    	
-    	private void drawMarker(GeoPoint point) {		
-    		List<Overlay> mapOverlays = mapView.getOverlays();
-            OverlayItem overlayitem = new OverlayItem(point, "Hello Paul", "Point: " + point);
-            hunterOverlay.addOverlay(overlayitem);
-    		
-            mapOverlays.add(hunterOverlay); // add new marker
-			mapView.invalidate();
-    	}
-    	  	
+  	  	
     	public void onProviderDisabled(String provider) {
     	}
     	
