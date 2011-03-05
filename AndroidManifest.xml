@@ -15,7 +15,7 @@
 		</activity>
         <activity android:label="@string/geocacheListTitle" android:name="geocacheListActivity">
         </activity>
-        <activity android:name="geocacheShow" android:label="@string/geocacheShowTitle">
+        <activity android:name="GeocacheShow" android:label="@string/geocacheShowTitle">
         </activity>
         <uses-library android:name="com.google.android.maps"></uses-library>
 	

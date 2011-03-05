@@ -24,19 +24,21 @@ public final class R {
         public static final int treasure_icon=0x7f02000a;
     }
     public static final class id {
-        public static final int account=0x7f06001d;
-        public static final int center=0x7f06001f;
+        public static final int account=0x7f06001f;
+        public static final int center=0x7f060021;
         public static final int closeButton=0x7f060008;
         public static final int compass=0x7f060002;
         public static final int compasslayout=0x7f060000;
         public static final int detail=0x7f060016;
+        public static final int foundButton=0x7f06001d;
         public static final int geocacheId=0x7f060017;
         public static final int geocacheLat=0x7f060019;
         public static final int geocacheLon=0x7f06001a;
         public static final int geocacheName=0x7f060018;
         public static final int geocacheNotes=0x7f06001b;
-        public static final int geocachelist=0x7f060020;
-        public static final int geocacheshow=0x7f060021;
+        public static final int geocacheOwner=0x7f06001c;
+        public static final int geocachelist=0x7f060022;
+        public static final int geocacheshow=0x7f060023;
         public static final int img=0x7f060014;
         public static final int lbl_degrees=0x7f060001;
         public static final int lbl_pass=0x7f060005;
@@ -46,9 +48,9 @@ public final class R {
         public static final int location_text_lng=0x7f06000c;
         public static final int mainlayout=0x7f060009;
         public static final int mapview=0x7f06000a;
-        public static final int myGroup=0x7f06001c;
+        public static final int myGroup=0x7f06001e;
         public static final int password=0x7f060006;
-        public static final int refresh=0x7f06001e;
+        public static final int refresh=0x7f060020;
         public static final int status_text_00=0x7f060010;
         public static final int status_text_01=0x7f060012;
         public static final int title=0x7f060015;

@@ -252,6 +252,60 @@ public class NetworkTools {
         }
     }
 	
+	public static boolean getGeocache(int geocacheId, Handler handler, Context context) {
+		location geocache = new location();
+    	final HttpResponse resp;
+        String respString;
+        String url = BASEURL + geocacheURL;
+        // get token
+        String token = getToken();
+    	// get vars
+        url = url + "/" + geocacheId + "?authenticity_token="+token + "mobile=true";
+    	final HttpGet get = new HttpGet(url);
+        maybeCreateHttpClient();
+        
+        try {
+			get.setURI(new URI(url));
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        
+	    try {
+	    	
+            resp = mHttpClient.execute(get);
+                        
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Successful get of geocache");
+                }
+                HttpEntity hEntity = resp.getEntity();
+                InputStream instream = hEntity.getContent();
+                respString = convertStreamToString(instream,false);
+                Log.d(TAG, respString.toString());
+                geocache = newGeocache(respString) ;
+                sendGeocacheResult(geocache, handler, context);
+                return true;   
+            } else {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Error getting geocache data" + resp.getStatusLine());
+                }
+                sendNetworkError("Error getting geocache data", handler, context);
+                return false;
+            }
+        } catch (final IOException e) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "IOException when getting geocache data", e);
+            }
+            sendNetworkError("IO Exception when getting geocache data", handler, context);
+            return false;
+        } finally {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "getGeocache completing");
+            }
+        }
+    }
+	
     private static locationList newLocationList(String JSONString) {
     	locationList mylocationList = new locationList();
     	try {
@@ -276,6 +330,37 @@ public class NetworkTools {
     	}
     	
     	return mylocationList;
+    }
+
+	private static location newGeocache(String JSONString) {
+    	location geocache = new location();
+    	try {
+    		JSONObject obj = new JSONObject(JSONString);
+    		JSONArray jsonArray = obj.getJSONArray("geocache");
+    		
+    		int size = jsonArray.length();
+    		if (size > 0) {
+	    		for (int i = 0; i < size; i++) {
+	    			JSONObject another_json_object = jsonArray.getJSONObject(i);
+	    	    	geocache.setId(Integer.parseInt(another_json_object.getString("id").trim()));
+	    	    	geocache.setName(another_json_object.getString("name"));
+	    			geocache.setLat(another_json_object.getString("lat"));
+	    			geocache.setLon(another_json_object.getString("lon"));
+	    			geocache.setNotes(another_json_object.getString("notes"));
+	    			geocache.setOwner(another_json_object.getString("owner"));
+	    			geocache.setSize(another_json_object.getString("size"));
+	    			geocache.setStatus(another_json_object.getString("status"));
+	    			geocache.setTerrain(another_json_object.getString("terrain"));
+	    			geocache.setDifficulty(another_json_object.getString("difficulty"));
+	    			geocache.setFavorite(another_json_object.getBoolean("favorite"));
+	    			geocache.setFound(another_json_object.getBoolean("found"));
+	    		}
+    		}
+    	}
+    	catch (Exception je) {
+    	}
+    	
+    	return geocache;
     }
     
     private static String convertStreamToString(InputStream is, boolean newline){
@@ -360,6 +445,26 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((CurrentLocation) context).onGeocachesResult(result);
+            }
+        });
+    }
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendGeocacheResult(final location result, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((GeocacheShow) context).onGeocacheResult(result);
             }
         });
     }

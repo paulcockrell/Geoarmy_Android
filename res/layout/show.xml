@@ -8,6 +8,7 @@
     	android:paddingLeft="5px"
     	android:paddingRight="5px"
     	android:paddingTop="5px">
+    	
   			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
@@ -16,8 +17,9 @@
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
 				android:paddingRight="5px">
-<TextView android:text="Geocache ID:" android:id="@+id/geocacheId" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-	</geoarmy.android.TransparentPanel>
+				<TextView android:text="Geocache ID:" android:id="@+id/geocacheId" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
 			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
@@ -26,8 +28,9 @@
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
 				android:paddingRight="5px">
-<TextView android:text="Geocache name:" android:id="@+id/geocacheName" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-</geoarmy.android.TransparentPanel>
+				<TextView android:text="Geocache name:" android:id="@+id/geocacheName" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
 			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
@@ -36,8 +39,9 @@
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
 				android:paddingRight="5px">
-<TextView android:text="Geocache Lat:" android:id="@+id/geocacheLat" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-</geoarmy.android.TransparentPanel>
+				<TextView android:text="Geocache Lat:" android:id="@+id/geocacheLat" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
 			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
@@ -46,8 +50,9 @@
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
 				android:paddingRight="5px">
-<TextView android:text="Geocache Lon:" android:id="@+id/geocacheLon" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-</geoarmy.android.TransparentPanel>
+				<TextView android:text="Geocache Lon:" android:id="@+id/geocacheLon" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
 			<geoarmy.android.TransparentPanel
 				android:id="@+id/transparent_panel" 
 		   	    android:layout_width="fill_parent"
@@ -56,6 +61,25 @@
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
 				android:paddingRight="5px">
-<TextView android:text="Geocache Notes:" android:id="@+id/geocacheNotes" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-</geoarmy.android.TransparentPanel>
+				<TextView android:text="Geocache Notes:" android:id="@+id/geocacheNotes" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
+			<geoarmy.android.TransparentPanel
+				android:id="@+id/transparent_panel" 
+		   	    android:layout_width="fill_parent"
+		       	android:layout_height="fill_parent"
+		       	android:paddingTop="5px"
+		       	android:paddingLeft="5px"
+				android:paddingBottom="5px"
+				android:paddingRight="5px">
+				<TextView android:text="Geocache Owner:" android:id="@+id/geocacheOwner" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+			</geoarmy.android.TransparentPanel>
+			
+			<Button 
+				android:id="@+id/foundButton"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="Set as found"
+				android:onClick="">
+			</Button>
 </LinearLayout>

@@ -70,14 +70,9 @@ public class geocacheListActivity extends ListActivity {
   		Log.d(TAG, "[[["+localLocation.getName()+"]]]");
     	Bundle bundle = new Bundle();
     	bundle.putString("gId", localLocation.getId().toString());
-    	bundle.putString("gLat", localLocation.getLat());
-    	bundle.putString("gLon", localLocation.getLon());
-    	bundle.putString("gName", localLocation.getName());
-    	bundle.putString("gNotes", localLocation.getNotes());
-    	Intent i = new Intent(this, geocacheShow.class);
+    	Intent i = new Intent(this, GeocacheShow.class);
     	i.putExtras(bundle);
     	startActivityForResult(i, 0);
-    	//startActivity(i);
     }
     
 	public void onListItemClick(ListView parent, View v, int position, long id) {       	
