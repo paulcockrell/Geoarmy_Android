@@ -324,8 +324,7 @@ public class NetworkTools {
         } else if (action == "delfavorite") {
         	url = url + delFavoriteURL;
         }
-        
-        boolean isLoggedIn= false;
+
         //get token
 		String token = getToken();
     	// post vars
@@ -362,7 +361,7 @@ public class NetworkTools {
                     Log.v(TAG, "Error setting geocache action" + resp.getStatusLine());
                 }
                 UserPreferences.setLoggedIn(false);
-                sendNetworkError("Error setting geocache action", handler, context);
+                sendGeocacheShowError("Error setting geocache action", handler, context);
                 return false;
             }
         } catch (final IOException e) {
@@ -370,14 +369,13 @@ public class NetworkTools {
                 Log.v(TAG, "IOException when setting geocache action", e);
             }
             UserPreferences.setLoggedIn(false);
-            sendNetworkError("IO Exception when setting geocache action", handler, context);
+            sendGeocacheShowError("IO Exception when setting geocache action", handler, context);
             return false;
         } finally {
             if (Log.isLoggable(TAG, Log.VERBOSE)) {
                 Log.v(TAG, "Setting geocache action completed");
             }
         }
-        UserPreferences.setLoggedIn(isLoggedIn);
 		return result;
     }
 	
@@ -465,6 +463,7 @@ public class NetworkTools {
     
     private static boolean connectionResult(String JSONString) {
     	String strResult = "false";
+    	Log.d(TAG, JSONString);
     	try {
     		JSONObject obj = new JSONObject(JSONString);
     		JSONArray jsonArray = obj.getJSONArray("connection");
@@ -478,9 +477,10 @@ public class NetworkTools {
     		}
     	}
     	catch (Exception je) {
-    		//strResult = je.getMessage();
+    		strResult = je.getMessage();
+    		Log.d(TAG, "uh-oh"+strResult);
     	}
-    	
+    	Log.d(TAG, "Action parsed="+strResult);
     	return Boolean.parseBoolean(strResult);
     }
     
@@ -560,6 +560,18 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((GeocacheShow) context).onGeocacheResult(result);
+            }
+        });
+    }
+    
+    private static void sendGeocacheShowError(final String result, final Handler handler,
+            final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((GeocacheShow) context).onNetworkError(result);
             }
         });
     }

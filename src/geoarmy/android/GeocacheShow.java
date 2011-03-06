@@ -117,18 +117,29 @@ public class GeocacheShow extends Activity {
     	setButtonListeners(geocache);
     	m_ProgressDialog.dismiss();
     }
+    
+    public void onNetworkError(String error) {
+    	if (!(m_ProgressDialog == null) && m_ProgressDialog.isShowing()) {
+    		m_ProgressDialog.dismiss();
+    	}
+    	MessageTools.alert("Sorry a network error has occured", GeocacheShow.this);
+    }
 
 	public void onGeocacheActionResult(Boolean result, String action) {
 	    final Context context = GeocacheShow.this;
 		if (result) {
 		       if (action == "addfound") {
 		    	   this.geocacheFound.setText("Found: true");
+		    	   Toast.makeText(context, "Added geocache to found!", Toast.LENGTH_LONG).show();
 		        } else if (action == "addfavorite") {
 		        	this.geocacheFavorite.setText("Favorite: true");
+		        	Toast.makeText(context, "Added geocache to favorites!", Toast.LENGTH_LONG).show();
 		        } else if (action == "delfound") {
 		        	this.geocacheFound.setText("Found: false");
+		        	Toast.makeText(context, "Removed geocache from found!", Toast.LENGTH_LONG).show();
 		        } else if (action == "delfavorite") {
 		        	this.geocacheFavorite.setText("Favorite: false");
+		        	Toast.makeText(context, "Removed geocache from favorites", Toast.LENGTH_LONG).show();
 		        }
 		} else {
 			Toast.makeText(context, "Failed to set geocache action, please try again", Toast.LENGTH_LONG).show();
