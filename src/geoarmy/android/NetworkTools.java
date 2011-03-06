@@ -39,9 +39,9 @@ public class NetworkTools {
 	private static String authenticateURL  = "login/login";
 	private static String geocacheURL      = "geocaches";
 	private static String addFoundURL         = "found/add_found";
-	private static String addFavoriteURL      = "favorite/add_favorite";
+	private static String addFavoriteURL      = "favorites/add_favorite";
 	private static String delFoundURL         = "found/delete_found";
-	private static String delFavoriteURL      = "favorite/delete_favorite";
+	private static String delFavoriteURL      = "favorites/delete_favorite";
 	public static final String BASEURL     = "http://www.geoarmy.net/";
     public static HttpContext localContext = new BasicHttpContext();
     
