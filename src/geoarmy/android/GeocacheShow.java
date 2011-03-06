@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 public class GeocacheShow extends Activity {
 	TextView geocacheId, geocacheName, geocacheLat, geocacheLon, geocacheNotes, geocacheOwner;
+	TextView geocacheStatus, geocacheGeoType, geocacheTerrain, geocacheDifficulty, geocacheSize;
+	TextView geocacheFound, geocacheFavorite;
 	private ProgressDialog m_ProgressDialog = null; 
 	
 	@Override
@@ -27,6 +29,14 @@ public class GeocacheShow extends Activity {
         geocacheLon = (TextView) findViewById(R.id.geocacheLon);
         geocacheNotes = (TextView) findViewById(R.id.geocacheNotes);
         geocacheOwner = (TextView) findViewById(R.id.geocacheOwner);
+        geocacheStatus = (TextView) findViewById(R.id.geocacheStatus);
+        geocacheGeoType = (TextView) findViewById(R.id.geocacheGeoType);
+        geocacheTerrain = (TextView) findViewById(R.id.geocacheTerrain);
+        geocacheDifficulty = (TextView) findViewById(R.id.geocacheDifficulty);
+        geocacheSize = (TextView) findViewById(R.id.geocacheSize);
+        geocacheFound = (TextView) findViewById(R.id.geocacheFound);
+        geocacheFavorite = (TextView) findViewById(R.id.geocacheFavorite);
+        
 	    final Button   foundButton  = (Button) findViewById(R.id.foundButton);
 		Bundle bundle = getIntent().getExtras();        
 		final String gId = bundle.getString("gId");
@@ -60,5 +70,11 @@ public class GeocacheShow extends Activity {
 		this.geocacheLon.setText("Lon: " + geocache.getLon());
 		this.geocacheNotes.setText("Notes: " + geocache.getNotes());
 		this.geocacheOwner.setText("Owner: " + geocache.getOwner());
+		this.geocacheSize.setText("Size: "+ geocache.getSize());
+		this.geocacheStatus.setText("Status: " + geocache.getStatus());
+		this.geocacheTerrain.setText("Terrain: " + geocache.getTerrain());
+		this.geocacheDifficulty.setText("Difficulty: " + geocache.getDifficulty());
+		this.geocacheFavorite.setText("Favorite: " + geocache.getFavorite());
+		this.geocacheFound.setText("Found: " + geocache.getFound());
     }
 }
