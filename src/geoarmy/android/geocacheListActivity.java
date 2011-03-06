@@ -113,16 +113,15 @@ private class CustomAdapter extends ArrayAdapter<RowData> {
 	            convertView = mInflater.inflate(R.layout.row, null);
 	            holder = new ViewHolder(convertView);
 	            convertView.setTag(holder);
-	 }
-         holder = (ViewHolder) convertView.getTag();
-         title = holder.gettitle();
-         title.setText(rowData.mTitle);
-         detail = holder.getdetail();
-         detail.setText(rowData.mDetail);                                                     
-         i11=holder.getImage();
-         //i11.setImageResource(imgid[rowData.mId]);
-         i11.setImageResource(R.drawable.ruby);
-         return convertView;
+	       }
+           holder = (ViewHolder) convertView.getTag();
+           title = holder.gettitle();
+           title.setText(rowData.mTitle);
+           detail = holder.getdetail();
+           detail.setText(rowData.mDetail);                                                     
+           i11=holder.getImage();
+           i11.setImageResource(R.drawable.ruby);
+           return convertView;
 	}
 
 	private class ViewHolder {
