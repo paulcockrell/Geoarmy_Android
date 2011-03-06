@@ -11,9 +11,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class GeocacheShow extends Activity {
+	private static final CharSequence DECLARE_FOUND = "Add found";
+	private static final CharSequence REMOVE_FOUND = "Del found";
+	private static final CharSequence DECLARE_FAVORITE = "Add favorite";
+	private static final CharSequence REMOVE_FAVORITE = "Del favorite";
 	TextView geocacheId, geocacheName, geocacheLat, geocacheLon, geocacheNotes, geocacheOwner;
 	TextView geocacheStatus, geocacheGeoType, geocacheTerrain, geocacheDifficulty, geocacheSize;
 	TextView geocacheFound, geocacheFavorite;
+	Button foundButton, favoriteButton;
+    
+	location thisGeocache;
+	
 	private ProgressDialog m_ProgressDialog = null; 
 	
 	@Override
@@ -22,7 +30,8 @@ public class GeocacheShow extends Activity {
 		setContentView(R.layout.show);
 	    final Context context = GeocacheShow.this;
 		final Handler mHandler = new Handler();
-
+	    foundButton  = (Button) findViewById(R.id.btnFound);
+	    favoriteButton  = (Button) findViewById(R.id.btnFavorite);
 		geocacheId = (TextView) findViewById(R.id.geocacheId);
         geocacheName = (TextView) findViewById(R.id.geocacheName);
         geocacheLat = (TextView) findViewById(R.id.geocacheLat);
@@ -88,14 +97,11 @@ public class GeocacheShow extends Activity {
 		this.geocacheFound.setText("Found: " + geocache.getFound());
 	}
 	
-	private void setButtonListeners(final location geocache) {
-        final Button foundButton  = (Button) findViewById(R.id.btnFound);
-        final Button favoriteButton  = (Button) findViewById(R.id.btnFavorite);
-        
+	private void setButtonListeners() {       
 		foundButton.setOnClickListener(new Button.OnClickListener() {
 	    	public void onClick(View v) {
 	    		try {  				
-	    			declareGeocacheFound(v.getContext(),geocache.getId(), geocache.getFound());
+	    			declareGeocacheFound(v.getContext(), thisGeocache.getId(), thisGeocache.getFound());
 	    	} catch (Exception e) {
 	    			
 	    		}
@@ -104,7 +110,7 @@ public class GeocacheShow extends Activity {
 		favoriteButton.setOnClickListener(new Button.OnClickListener() {
 	    	public void onClick(View v) {
 	    		try {  				
-	    			declareGeocacheFavorite(v.getContext(),geocache.getId(), geocache.getFavorite());
+	    			declareGeocacheFavorite(v.getContext(), thisGeocache.getId(), thisGeocache.getFavorite());
 	    	} catch (Exception e) {
 	    			
 	    		}
@@ -112,9 +118,24 @@ public class GeocacheShow extends Activity {
 		 });
 	}
 
+	public void setButtonText() {
+		if (thisGeocache.getFound()) {
+			foundButton.setText(REMOVE_FOUND);
+		} else if (!thisGeocache.getFound()) {
+			foundButton.setText(DECLARE_FOUND);
+		}
+		if (thisGeocache.getFavorite()) {
+			favoriteButton.setText(REMOVE_FAVORITE);
+		} else if (!thisGeocache.getFavorite()) {
+			favoriteButton.setText(DECLARE_FAVORITE);
+		}
+	}
+	
     public void onGeocacheResult(location geocache) {
-    	drawScreen(geocache);
-    	setButtonListeners(geocache);
+    	thisGeocache = geocache;
+    	drawScreen(thisGeocache);
+    	setButtonText();
+    	setButtonListeners();
     	m_ProgressDialog.dismiss();
     }
     
@@ -129,18 +150,23 @@ public class GeocacheShow extends Activity {
 	    final Context context = GeocacheShow.this;
 		if (result) {
 		       if (action == "addfound") {
+		    	   thisGeocache.setFound(true);
 		    	   this.geocacheFound.setText("Found: true");
 		    	   Toast.makeText(context, "Added geocache to found!", Toast.LENGTH_LONG).show();
 		        } else if (action == "addfavorite") {
+		        	thisGeocache.setFavorite(true);
 		        	this.geocacheFavorite.setText("Favorite: true");
 		        	Toast.makeText(context, "Added geocache to favorites!", Toast.LENGTH_LONG).show();
 		        } else if (action == "delfound") {
+		        	thisGeocache.setFound(false);
 		        	this.geocacheFound.setText("Found: false");
 		        	Toast.makeText(context, "Removed geocache from found!", Toast.LENGTH_LONG).show();
 		        } else if (action == "delfavorite") {
+		        	thisGeocache.setFavorite(false);
 		        	this.geocacheFavorite.setText("Favorite: false");
 		        	Toast.makeText(context, "Removed geocache from favorites", Toast.LENGTH_LONG).show();
 		        }
+		        setButtonText();
 		} else {
 			Toast.makeText(context, "Failed to set geocache action, please try again", Toast.LENGTH_LONG).show();
 		}
