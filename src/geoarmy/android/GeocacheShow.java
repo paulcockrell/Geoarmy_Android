@@ -7,14 +7,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class GeocacheShow extends Activity {
+	private static final CharSequence DECLARE_FOUND = "Add found";
+	private static final CharSequence REMOVE_FOUND = "Del found";
+	private static final CharSequence DECLARE_FAVORITE = "Add favorite";
+	private static final CharSequence REMOVE_FAVORITE = "Del favorite";
 	TextView geocacheId, geocacheName, geocacheLat, geocacheLon, geocacheNotes, geocacheOwner;
 	TextView geocacheStatus, geocacheGeoType, geocacheTerrain, geocacheDifficulty, geocacheSize;
 	TextView geocacheFound, geocacheFavorite;
+	Button foundButton, favoriteButton;
+    
+	location thisGeocache;
+	
 	private ProgressDialog m_ProgressDialog = null; 
 	
 	@Override
@@ -23,7 +30,8 @@ public class GeocacheShow extends Activity {
 		setContentView(R.layout.show);
 	    final Context context = GeocacheShow.this;
 		final Handler mHandler = new Handler();
-
+	    foundButton  = (Button) findViewById(R.id.btnFound);
+	    favoriteButton  = (Button) findViewById(R.id.btnFavorite);
 		geocacheId = (TextView) findViewById(R.id.geocacheId);
         geocacheName = (TextView) findViewById(R.id.geocacheName);
         geocacheLat = (TextView) findViewById(R.id.geocacheLat);
@@ -38,35 +46,44 @@ public class GeocacheShow extends Activity {
         geocacheFound = (TextView) findViewById(R.id.geocacheFound);
         geocacheFavorite = (TextView) findViewById(R.id.geocacheFavorite);
         
-	    //final Button   foundButton  = (Button) findViewById(R.id.foundButton);
 		Bundle bundle = getIntent().getExtras();        
 		final String gId = bundle.getString("gId");
 	    
-		/*foundButton.setOnClickListener(new Button.OnClickListener() {
-	    	public void onClick(View v) {
-	    		try {  				
-	    				declareGeocacheFound(v.getContext(),Integer.parseInt(gId.trim()));
-	    	} catch (Exception e) {
-	    			
-	    		}
-	    	}
-		 });  */
-		
 		m_ProgressDialog = ProgressDialog.show(GeocacheShow.this,    
 	             "Please wait...", "Retrieving geocache data ...", true);
 		
 		NetworkTools.getGeocache(Integer.parseInt(gId), mHandler, context);
 	}
 
-	private boolean declareGeocacheFound(Context context, int gId) {
-		Toast.makeText(context, "Geocache declared as found!", Toast.LENGTH_LONG).show();
-		return true;
+	private void declareGeocacheFound(Context context, int gId, boolean foundState) {
+		final Handler mHandler = new Handler();
+		String action = "";
+		if (foundState) {
+			action = "delfound";
+		} else {
+			action = "addfound";
+		}
+		
+		m_ProgressDialog = ProgressDialog.show(GeocacheShow.this,    
+	             "Please wait...", "Declaring geocache found", true);
+		NetworkTools.geocacheAction(gId, action, mHandler, context);
+	}
+
+	private void declareGeocacheFavorite(Context context, int gId, boolean favoriteState) {
+		final Handler mHandler = new Handler();
+		String action = "";
+		if (favoriteState) {
+			action = "delfavorite";
+		} else {
+			action = "addfavorite";
+		}
+		m_ProgressDialog = ProgressDialog.show(GeocacheShow.this,    
+	             "Please wait...", "Declaring geocache as a favorite", true);
+		NetworkTools.geocacheAction(gId, action, mHandler, context);
 	}
 	
 	private void drawScreen(final location geocache) {
-		LinearLayout lnr = (LinearLayout) findViewById(R.id.mainLinearLayout);
-
-    	this.geocacheId.setText("ID: " + geocache.getId());
+		this.geocacheId.setText("ID: " + geocache.getId());
 		this.geocacheName.setText("Name: " + geocache.getName());
 		this.geocacheLat.setText("Lat: " + geocache.getLat());
 		this.geocacheLon.setText("Lon: " + geocache.getLon());
@@ -76,48 +93,85 @@ public class GeocacheShow extends Activity {
 		this.geocacheStatus.setText("Status: " + geocache.getStatus());
 		this.geocacheTerrain.setText("Terrain: " + geocache.getTerrain());
 		this.geocacheDifficulty.setText("Difficulty: " + geocache.getDifficulty());
-		
-		if (geocache.getFavorite() == false) {
-			Button btnFavorite = new Button(this);
-			btnFavorite.setText("Add to favorites");
-			lnr.addView(btnFavorite);
-			
-			btnFavorite.setOnClickListener(new Button.OnClickListener() {
-		    	public void onClick(View v) {
-		    		try {  				
-		    				declareGeocacheFound(v.getContext(),geocache.getId());
-		    	} catch (Exception e) {
-		    			
-		    		}
-		    	}
-			 });
-		} else {
-			this.geocacheFavorite.setText("You have added this geocache to your favorites");
-		}
-		
-		if (geocache.getFound() == false) {
-			Button btnFound = new Button(this);
-			btnFound.setText("Set as found");
-			lnr.addView(btnFound);
-			
-			btnFound.setOnClickListener(new Button.OnClickListener() {
-		    	public void onClick(View v) {
-		    		try {  				
-		    				declareGeocacheFound(v.getContext(),geocache.getId());
-		    	} catch (Exception e) {
-		    			
-		    		}
-		    	}
-			 });
-		} else {
-			this.geocacheFound.setText("You have found this geocache");
-		}
+		this.geocacheFavorite.setText("Favorite: " + geocache.getFavorite());
+		this.geocacheFound.setText("Found: " + geocache.getFound());
+	}
+	
+	private void setButtonListeners() {       
+		foundButton.setOnClickListener(new Button.OnClickListener() {
+	    	public void onClick(View v) {
+	    		try {  				
+	    			declareGeocacheFound(v.getContext(), thisGeocache.getId(), thisGeocache.getFound());
+	    	} catch (Exception e) {
+	    			
+	    		}
+	    	}
+		 });
+		favoriteButton.setOnClickListener(new Button.OnClickListener() {
+	    	public void onClick(View v) {
+	    		try {  				
+	    			declareGeocacheFavorite(v.getContext(), thisGeocache.getId(), thisGeocache.getFavorite());
+	    	} catch (Exception e) {
+	    			
+	    		}
+	    	}
+		 });
 	}
 
+	public void setButtonText() {
+		if (thisGeocache.getFound()) {
+			foundButton.setText(REMOVE_FOUND);
+		} else if (!thisGeocache.getFound()) {
+			foundButton.setText(DECLARE_FOUND);
+		}
+		if (thisGeocache.getFavorite()) {
+			favoriteButton.setText(REMOVE_FAVORITE);
+		} else if (!thisGeocache.getFavorite()) {
+			favoriteButton.setText(DECLARE_FAVORITE);
+		}
+	}
+	
     public void onGeocacheResult(location geocache) {
+    	thisGeocache = geocache;
+    	drawScreen(thisGeocache);
+    	setButtonText();
+    	setButtonListeners();
     	m_ProgressDialog.dismiss();
-    	drawScreen(geocache);
     }
+    
+    public void onNetworkError(String error) {
+    	if (!(m_ProgressDialog == null) && m_ProgressDialog.isShowing()) {
+    		m_ProgressDialog.dismiss();
+    	}
+    	MessageTools.alert("Sorry a network error has occured", GeocacheShow.this);
+    }
+
+	public void onGeocacheActionResult(Boolean result, String action) {
+	    final Context context = GeocacheShow.this;
+		if (result) {
+		       if (action == "addfound") {
+		    	   thisGeocache.setFound(true);
+		    	   this.geocacheFound.setText("Found: true");
+		    	   Toast.makeText(context, "Added geocache to found!", Toast.LENGTH_LONG).show();
+		        } else if (action == "addfavorite") {
+		        	thisGeocache.setFavorite(true);
+		        	this.geocacheFavorite.setText("Favorite: true");
+		        	Toast.makeText(context, "Added geocache to favorites!", Toast.LENGTH_LONG).show();
+		        } else if (action == "delfound") {
+		        	thisGeocache.setFound(false);
+		        	this.geocacheFound.setText("Found: false");
+		        	Toast.makeText(context, "Removed geocache from found!", Toast.LENGTH_LONG).show();
+		        } else if (action == "delfavorite") {
+		        	thisGeocache.setFavorite(false);
+		        	this.geocacheFavorite.setText("Favorite: false");
+		        	Toast.makeText(context, "Removed geocache from favorites", Toast.LENGTH_LONG).show();
+		        }
+		        setButtonText();
+		} else {
+			Toast.makeText(context, "Failed to set geocache action, please try again", Toast.LENGTH_LONG).show();
+		}
+    	m_ProgressDialog.dismiss();
+	}
     
 }
 

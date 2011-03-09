@@ -38,6 +38,10 @@ public class NetworkTools {
 	private static String tokenUrl         = "login/get_auth_token";
 	private static String authenticateURL  = "login/login";
 	private static String geocacheURL      = "geocaches";
+	private static String addFoundURL         = "found/add_found";
+	private static String addFavoriteURL      = "favorites/add_favorite";
+	private static String delFoundURL         = "found/delete_found";
+	private static String delFavoriteURL      = "favorites/delete_favorite";
 	public static final String BASEURL     = "http://www.geoarmy.net/";
     public static HttpContext localContext = new BasicHttpContext();
     
@@ -306,6 +310,75 @@ public class NetworkTools {
         }
     }
 	
+	public static boolean geocacheAction(int geocacheID, String action, Handler handler, final Context context) {
+    	final HttpResponse resp;
+        String respString;
+		boolean result;
+        String url = BASEURL;
+        if (action == "addfound") {
+        	url = url + addFoundURL;
+        } else if (action == "addfavorite") {
+        	url = url + addFavoriteURL;
+        } else if (action == "delfound") {
+        	url = url + delFoundURL;
+        } else if (action == "delfavorite") {
+        	url = url + delFavoriteURL;
+        }
+
+        //get token
+		String token = getToken();
+    	// post vars
+    	final ArrayList<NameValuePair> params = new ArrayList<NameValuePair>();
+    	params.add(new BasicNameValuePair("authenticity_token", token));
+    	params.add(new BasicNameValuePair("id", ""+geocacheID));
+    	params.add(new BasicNameValuePair("mobile", "true"));
+    	HttpEntity entity = null;
+        try {
+            entity = new UrlEncodedFormEntity(params);
+        } catch (final UnsupportedEncodingException e) {
+            // this should never happen.
+            throw new AssertionError(e);
+        }
+        final HttpPost post = new HttpPost(url);
+        post.addHeader(entity.getContentType());
+        post.setEntity(entity);
+        maybeCreateHttpClient();
+        
+	    try {
+            resp = mHttpClient.execute(post, localContext);
+                        
+            if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Successful geocache action");
+                }
+                HttpEntity hEntity = resp.getEntity();
+                InputStream instream = hEntity.getContent();
+                respString = convertStreamToString(instream,false);
+                result = connectionResult(respString);
+               	sendGeocacheActionResult(result, action, handler, context); 
+            } else {
+                if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                    Log.v(TAG, "Error setting geocache action" + resp.getStatusLine());
+                }
+                UserPreferences.setLoggedIn(false);
+                sendGeocacheShowError("Error setting geocache action", handler, context);
+                return false;
+            }
+        } catch (final IOException e) {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "IOException when setting geocache action", e);
+            }
+            UserPreferences.setLoggedIn(false);
+            sendGeocacheShowError("IO Exception when setting geocache action", handler, context);
+            return false;
+        } finally {
+            if (Log.isLoggable(TAG, Log.VERBOSE)) {
+                Log.v(TAG, "Setting geocache action completed");
+            }
+        }
+		return result;
+    }
+	
     private static locationList newLocationList(String JSONString) {
     	locationList mylocationList = new locationList();
     	try {
@@ -390,6 +463,7 @@ public class NetworkTools {
     
     private static boolean connectionResult(String JSONString) {
     	String strResult = "false";
+    	Log.d(TAG, JSONString);
     	try {
     		JSONObject obj = new JSONObject(JSONString);
     		JSONArray jsonArray = obj.getJSONArray("connection");
@@ -403,9 +477,10 @@ public class NetworkTools {
     		}
     	}
     	catch (Exception je) {
-    		//strResult = je.getMessage();
+    		strResult = je.getMessage();
+    		Log.d(TAG, "uh-oh"+strResult);
     	}
-    	
+    	Log.d(TAG, "Action parsed="+strResult);
     	return Boolean.parseBoolean(strResult);
     }
     
@@ -425,6 +500,26 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((account) context).onAuthenticationResult(result);
+            }
+        });
+    }
+    
+    /**
+     * Sends the authentication response from server back to the caller main UI
+     * thread through its handler.
+     * 
+     * @param result The boolean holding authentication result
+     * @param handler The main UI thread's handler instance.
+     * @param context The caller Activity's context.
+     */
+    private static void sendGeocacheActionResult(final Boolean result, final String action, final Handler handler,
+        final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((GeocacheShow) context).onGeocacheActionResult(result, action);
             }
         });
     }
@@ -465,6 +560,18 @@ public class NetworkTools {
         handler.post(new Runnable() {
             public void run() {
                 ((GeocacheShow) context).onGeocacheResult(result);
+            }
+        });
+    }
+    
+    private static void sendGeocacheShowError(final String result, final Handler handler,
+            final Context context) {
+        if (handler == null || context == null) {
+            return;
+        }
+        handler.post(new Runnable() {
+            public void run() {
+                ((GeocacheShow) context).onNetworkError(result);
             }
         });
     }
