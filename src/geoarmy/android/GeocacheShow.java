@@ -3,10 +3,12 @@ package geoarmy.android;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +20,7 @@ public class GeocacheShow extends Activity {
 	TextView geocacheId, geocacheName, geocacheLat, geocacheLon, geocacheNotes, geocacheOwner;
 	TextView geocacheStatus, geocacheGeoType, geocacheTerrain, geocacheDifficulty, geocacheSize;
 	TextView geocacheFound, geocacheFavorite;
+	LinearLayout mainLinearLayout;
 	Button foundButton, favoriteButton;
     
 	location thisGeocache;
@@ -45,6 +48,7 @@ public class GeocacheShow extends Activity {
         geocacheSize = (TextView) findViewById(R.id.geocacheSize);
         geocacheFound = (TextView) findViewById(R.id.geocacheFound);
         geocacheFavorite = (TextView) findViewById(R.id.geocacheFavorite);
+        mainLinearLayout = (LinearLayout) findViewById(R.id.mainLinearLayout);
         
 		Bundle bundle = getIntent().getExtras();        
 		final String gId = bundle.getString("gId");
@@ -83,6 +87,11 @@ public class GeocacheShow extends Activity {
 	}
 	
 	private void drawScreen(final location geocache) {
+		// test dynamic add to linearlayour in scroll view, works but do we need it?
+		// TextView textView = new TextView(this);
+		// textView.setText("test dynamic text view");
+		// this.mainLinearLayout.addView(textView);
+		
 		this.geocacheId.setText("ID: " + geocache.getId());
 		this.geocacheName.setText("Name: " + geocache.getName());
 		this.geocacheLat.setText("Lat: " + geocache.getLat());
@@ -121,18 +130,21 @@ public class GeocacheShow extends Activity {
 	public void setButtonText() {
 		if (thisGeocache.getFound()) {
 			foundButton.setText(REMOVE_FOUND);
-			foundButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.star));
+			Drawable d = getResources().getDrawable(R.drawable.star);
+			foundButton.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 		} else if (!thisGeocache.getFound()) {
 			foundButton.setText(DECLARE_FOUND);
-			foundButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.star));
+			Drawable d = getResources().getDrawable(R.drawable.star);
+			foundButton.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 		}
 		if (thisGeocache.getFavorite()) {
 			favoriteButton.setText(REMOVE_FAVORITE);
-			favoriteButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.heart));
-
+			Drawable d = getResources().getDrawable(R.drawable.heart);
+			favoriteButton.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 		} else if (!thisGeocache.getFavorite()) {
 			favoriteButton.setText(DECLARE_FAVORITE);
-			favoriteButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.heart));
+			Drawable d = getResources().getDrawable(R.drawable.heart);
+			favoriteButton.setCompoundDrawablesWithIntrinsicBounds(d, null, null, null);
 		}
 	}
 	
