@@ -121,13 +121,18 @@ public class GeocacheShow extends Activity {
 	public void setButtonText() {
 		if (thisGeocache.getFound()) {
 			foundButton.setText(REMOVE_FOUND);
+			foundButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.star));
 		} else if (!thisGeocache.getFound()) {
 			foundButton.setText(DECLARE_FOUND);
+			foundButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.star));
 		}
 		if (thisGeocache.getFavorite()) {
 			favoriteButton.setText(REMOVE_FAVORITE);
+			favoriteButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.heart));
+
 		} else if (!thisGeocache.getFavorite()) {
 			favoriteButton.setText(DECLARE_FAVORITE);
+			favoriteButton.setBackgroundDrawable(getResources().getDrawable(R.drawable.heart));
 		}
 	}
 	
