@@ -40,7 +40,7 @@ public class CurrentLocation extends MapActivity {
 	
 	/** Menu references **/
 	private static final int ACCOUNT_ID = R.id.account;
-	private static final int RADAR_ID   = R.id.compass;
+	//private static final int RADAR_ID   = R.id.compass;
 	private static final int REFRESH_ID = R.id.refresh;
 	private static final int CENTER_ID  = R.id.center;
 	private static final int LIST_ID    = R.id.geocachelist;
@@ -121,9 +121,9 @@ public class CurrentLocation extends MapActivity {
         case ACCOUNT_ID:
             editAccount();
             break;
-        case RADAR_ID:
-        	compassView();
-        	break;
+        //case RADAR_ID:
+        //	compassView();
+        //	break;
         case REFRESH_ID:
             getGeocaches();
             break;

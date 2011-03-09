@@ -34,7 +34,7 @@ public class compass extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.compass);
 		
-		image = (ImageView) findViewById(R.id.compass);
+		//image = (ImageView) findViewById(R.id.compass);
 		degrees=(TextView)findViewById(R.id.lbl_degrees);
 
 		mgr=(SensorManager)getSystemService(Context.SENSOR_SERVICE);
@@ -52,7 +52,7 @@ public class compass extends Activity {
 			}
 		});*/
 		
-		bitmapOrg = BitmapFactory.decodeResource(getResources(), R.drawable.compass);
+		//bitmapOrg = BitmapFactory.decodeResource(getResources(), R.drawable.compass);
 		
 		height = bitmapOrg.getHeight();
 		width  = bitmapOrg.getWidth();

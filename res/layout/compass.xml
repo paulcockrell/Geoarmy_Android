@@ -43,10 +43,4 @@
 		android:onClick="">
 	</Button>-->
 	</LinearLayout>
-	<ImageView
-  android:id="@+id/compass"   
-  android:layout_width="fill_parent"
-  android:layout_height="fill_parent"
-  android:src="@drawable/compass"/>
-  
 </RelativeLayout>
