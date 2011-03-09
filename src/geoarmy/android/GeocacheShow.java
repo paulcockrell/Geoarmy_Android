@@ -11,10 +11,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class GeocacheShow extends Activity {
-	private static final CharSequence DECLARE_FOUND = "Add found";
-	private static final CharSequence REMOVE_FOUND = "Del found";
-	private static final CharSequence DECLARE_FAVORITE = "Add favorite";
-	private static final CharSequence REMOVE_FAVORITE = "Del favorite";
+	private static final CharSequence DECLARE_FOUND = "Found!";
+	private static final CharSequence REMOVE_FOUND = "Remove found status";
+	private static final CharSequence DECLARE_FAVORITE = "Favourite!";
+	private static final CharSequence REMOVE_FAVORITE = "No longer Favourite";
 	TextView geocacheId, geocacheName, geocacheLat, geocacheLon, geocacheNotes, geocacheOwner;
 	TextView geocacheStatus, geocacheGeoType, geocacheTerrain, geocacheDifficulty, geocacheSize;
 	TextView geocacheFound, geocacheFavorite;
