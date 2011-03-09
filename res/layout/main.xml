@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- development map key: android:apiKey="0kIwzAJ2JPnkR_spOcabz7QAsVwtavLhcl0atMw" -->
 <!-- production map key: android:apiKey="0kIwzAJ2JPnkCu100z7ecCfZl862_wUwoUk6F2Q" -->
+<!-- main  0jlC3WkmwfuXwQZDungWxtZ-MFtoF9ZFJ3qozxw -->
+<!-- dev 0jlC3WkmwfuXmawtxCoRGU0dasKDOLq58WCnPAA -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainlayout"
     android:orientation="vertical"
@@ -11,7 +13,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:apiKey="0kIwzAJ2JPnkR_spOcabz7QAsVwtavLhcl0atMw"
+        android:apiKey="0jlC3WkmwfuXmawtxCoRGU0dasKDOLq58WCnPAA"
     />
     
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -89,6 +91,7 @@
 				android:id="@+id/transparent_panel_2" 
 		   	    android:layout_width="fill_parent"
 		       	android:layout_height="wrap_content"
+		       	android:visibility="gone"
 		       	android:paddingTop="5px"
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"

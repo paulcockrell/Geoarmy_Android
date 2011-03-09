@@ -279,8 +279,8 @@ public class CurrentLocation extends MapActivity {
 	    		txt_lng.setText(currentLng);
 	    		
 	    		currentStatus = "GPS: Active";
-	    		txt_gps.setText(currentStatus);
-	
+	    		// txt_gps.setText(currentStatus);
+	    		
 	    		drawMarker(point);
 	    		//mapController.animateTo(point); always keep hunter in middle of map
     		}
