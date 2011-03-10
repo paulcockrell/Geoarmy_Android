@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:stretchColumns="1">
-	<TableRow>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		        android:id="@+id/mainLinearLayout"
+		        android:layout_width="fill_parent"
+		        android:layout_height="wrap_content"
+		        android:orientation="vertical"
+		        android:gravity="top"
+		        android:paddingLeft="5px"
+		        android:paddingRight="5px"
+		        android:paddingTop="5px">
 
         <ScrollView
         	android:id="@+id/mainScrollView"
 			xmlns:android="http://schemas.android.com/apk/res/android"
 			android:layout_width="fill_parent"
-			android:layout_height="fill_parent"
+			android:layout_height="0px" 
+			android:layout_weight="1"
 			>
 			<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 		        android:id="@+id/mainLinearLayout"
@@ -24,7 +29,14 @@
 		            <TextView android:text="Name:" android:id="@+id/geocacheName" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 		            <TextView android:text="Lat:" android:id="@+id/geocacheLat" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 		            <TextView android:text="Lon:" android:id="@+id/geocacheLon" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
-		            <TextView android:text="Notes:" android:id="@+id/geocacheNotes" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
+		            <TextView 
+			            android:text="Notes:" 
+			            android:id="@+id/geocacheNotes" 
+			            android:singleLine="false" 
+			            android:scrollHorizontally="false" 
+			            android:layout_width="fill_parent"
+						android:layout_height="wrap_content"
+			            />
 		            <TextView android:text="Owner:" android:id="@+id/geocacheOwner" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 		            <TextView android:text="Status:" android:id="@+id/geocacheStatus" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
 		            <TextView android:text="Type:" android:id="@+id/geocacheGeoType" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
@@ -35,11 +47,7 @@
 		            <TextView android:text="Favorite:" android:id="@+id/geocacheFavorite" android:layout_width="fill_parent" android:layout_height="wrap_content"></TextView>
             </LinearLayout>
 		</ScrollView>
-	</TableRow>
-	<TableRow >
 		<Button android:text="Declare found" android:id="@+id/btnFound" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
-	</TableRow>
-	<TableRow >
 		<Button android:text="Add to favorites" android:id="@+id/btnFavorite" android:layout_width="fill_parent" android:layout_height="wrap_content"></Button>
-	</TableRow>
-</TableLayout>
+	
+</LinearLayout>

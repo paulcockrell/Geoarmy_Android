@@ -25,10 +25,10 @@ public final class R {
         public static final int treasure_icon=0x7f02000b;
     }
     public static final class id {
-        public static final int account=0x7f060028;
+        public static final int account=0x7f06002b;
         public static final int btnFavorite=0x7f060026;
         public static final int btnFound=0x7f060025;
-        public static final int center=0x7f06002a;
+        public static final int center=0x7f060028;
         public static final int closeButton=0x7f060007;
         public static final int compasslayout=0x7f060000;
         public static final int detail=0x7f060015;
@@ -53,13 +53,13 @@ public final class R {
         public static final int list=0x7f060012;
         public static final int location_text_lat=0x7f06000d;
         public static final int location_text_lng=0x7f06000b;
-        public static final int mainLinearLayout=0x7f060017;
-        public static final int mainScrollView=0x7f060016;
+        public static final int mainLinearLayout=0x7f060016;
+        public static final int mainScrollView=0x7f060017;
         public static final int mainlayout=0x7f060008;
         public static final int mapview=0x7f060009;
         public static final int myGroup=0x7f060027;
         public static final int password=0x7f060005;
-        public static final int refresh=0x7f06002b;
+        public static final int refresh=0x7f06002a;
         public static final int status_text_00=0x7f06000f;
         public static final int status_text_01=0x7f060011;
         public static final int title=0x7f060014;
