@@ -16,19 +16,25 @@ public final class R {
         public static final int center_marker_male=0x7f020002;
         public static final int head_bubble=0x7f020003;
         public static final int heart=0x7f020004;
-        public static final int ic_menu_metric=0x7f020005;
-        public static final int ic_menu_standard=0x7f020006;
-        public static final int icon=0x7f020007;
-        public static final int john_icon=0x7f020008;
-        public static final int ruby=0x7f020009;
-        public static final int star=0x7f02000a;
-        public static final int treasure_icon=0x7f02000b;
+        public static final int heart_add=0x7f020005;
+        public static final int heart_delete=0x7f020006;
+        public static final int ic_menu_metric=0x7f020007;
+        public static final int ic_menu_standard=0x7f020008;
+        public static final int icon=0x7f020009;
+        public static final int john_icon=0x7f02000a;
+        public static final int ruby=0x7f02000b;
+        public static final int star=0x7f02000c;
+        public static final int star_add=0x7f02000d;
+        public static final int star_delete=0x7f02000e;
+        public static final int star_empty=0x7f02000f;
+        public static final int treasure_icon=0x7f020010;
     }
     public static final class id {
-        public static final int account=0x7f06002b;
-        public static final int btnFavorite=0x7f060026;
-        public static final int btnFound=0x7f060025;
-        public static final int center=0x7f060028;
+        public static final int InnerRelativeLayout=0x7f060025;
+        public static final int account=0x7f06002c;
+        public static final int btnFavorite=0x7f060027;
+        public static final int btnFound=0x7f060026;
+        public static final int center=0x7f060029;
         public static final int closeButton=0x7f060007;
         public static final int compasslayout=0x7f060000;
         public static final int detail=0x7f060015;
@@ -45,7 +51,7 @@ public final class R {
         public static final int geocacheSize=0x7f060022;
         public static final int geocacheStatus=0x7f06001e;
         public static final int geocacheTerrain=0x7f060020;
-        public static final int geocachelist=0x7f060029;
+        public static final int geocachelist=0x7f06002a;
         public static final int img=0x7f060013;
         public static final int lbl_degrees=0x7f060001;
         public static final int lbl_pass=0x7f060004;
@@ -57,9 +63,9 @@ public final class R {
         public static final int mainScrollView=0x7f060017;
         public static final int mainlayout=0x7f060008;
         public static final int mapview=0x7f060009;
-        public static final int myGroup=0x7f060027;
+        public static final int myGroup=0x7f060028;
         public static final int password=0x7f060005;
-        public static final int refresh=0x7f06002a;
+        public static final int refresh=0x7f06002b;
         public static final int status_text_00=0x7f06000f;
         public static final int status_text_01=0x7f060011;
         public static final int title=0x7f060014;
