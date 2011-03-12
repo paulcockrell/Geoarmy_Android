@@ -91,7 +91,6 @@
 				android:id="@+id/transparent_panel_2" 
 		   	    android:layout_width="fill_parent"
 		       	android:layout_height="wrap_content"
-		       	android:visibility="gone"
 		       	android:paddingTop="5px"
 		       	android:paddingLeft="5px"
 				android:paddingBottom="5px"
@@ -101,7 +100,7 @@
 		        	android:textStyle="bold"
 		        	android:layout_width="fill_parent"
 		        	android:layout_height="fill_parent"
-		        	android:text="GPS: Searching"/>
+		        	android:text="Compass Heading: Searching"/>
 	        
 			</geoarmy.android.TransparentPanel>
 

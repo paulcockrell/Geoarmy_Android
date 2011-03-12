@@ -11,8 +11,6 @@
         </activity>
         <activity android:name="account" android:label="@string/editAccountTitle">
         </activity>
-		<activity android:name="compass" android:label="@string/compassTitle">
-		</activity>
         <activity android:label="@string/geocacheListTitle" android:name="geocacheListActivity">
         </activity>
         <activity android:name="GeocacheShow" android:label="@string/geocacheShowTitle">

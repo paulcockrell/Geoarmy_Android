@@ -9,6 +9,10 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -33,14 +37,19 @@ public class CurrentLocation extends MapActivity {
 	StaticItemizedOverlay treasureOverlay;
 	DynamicItemizedOverlay hunterOverlay;
 	Context mContext;
-	TextView txt_lat, txt_lng, txt_geocount, txt_gps;
+	TextView txt_lat, txt_lng, txt_geocount, txt_compass;
 	int latitude = 51618120, longitude = -1279020;
 	String currentStatus;
 	UserPreferences userPrefs;
+	char degree = '\u00B0';
 	
+	/** Compass stuff **/
+	private static SensorManager mySensorManager;
+	@SuppressWarnings("unused")
+	private boolean sensorrunning;
+	private String[] headings = {"North","North by North East","North East","North East by East","East","South East by East","South East","South by South East","South","South by South West","South West","South West by West","West","North West by West","North West","North by North West"};
 	/** Menu references **/
 	private static final int ACCOUNT_ID = R.id.account;
-	//private static final int RADAR_ID   = R.id.compass;
 	private static final int REFRESH_ID = R.id.refresh;
 	private static final int CENTER_ID  = R.id.center;
 	private static final int LIST_ID    = R.id.geocachelist;
@@ -57,6 +66,8 @@ public class CurrentLocation extends MapActivity {
         setContentView(R.layout.main); // bind the layout to the activity
         enableGPS();
         
+        /** Set up Compass    **/
+        initCompass();
         /** Set up GPS pinger **/
         setGPSPing();
         
@@ -65,8 +76,8 @@ public class CurrentLocation extends MapActivity {
         txt_lat = (TextView) findViewById(R.id.location_text_lat); 
         // geocache counter
         txt_geocount = (TextView) findViewById(R.id.status_text_00);
-        // Satellite text
-        txt_gps = (TextView) findViewById(R.id.status_text_01);
+        // Compass text
+        txt_compass = (TextView) findViewById(R.id.status_text_01);
         
         // create a map view
         mapView = (MapView) findViewById(R.id.mapview);
@@ -101,7 +112,7 @@ public class CurrentLocation extends MapActivity {
     	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new GeoUpdateHandler());
     }
-    
+
     public static locationList getCurrentLocationList() {
     	currentLocationList.length();
     	return currentLocationList;
@@ -121,9 +132,6 @@ public class CurrentLocation extends MapActivity {
         case ACCOUNT_ID:
             editAccount();
             break;
-        //case RADAR_ID:
-        //	compassView();
-        //	break;
         case REFRESH_ID:
             getGeocaches();
             break;
@@ -144,11 +152,6 @@ public class CurrentLocation extends MapActivity {
      
     private final void editAccount() {
     	Intent i = new Intent(this, account.class);
-    	startActivity(i);
-    }
-    
-    private final void compassView() {
-    	Intent i = new Intent(this, compass.class);
     	startActivity(i);
     }
     
@@ -249,6 +252,43 @@ public class CurrentLocation extends MapActivity {
     protected boolean isRouteDisplayed() {
     	return false;
     }
+    
+    private void initCompass() {    	 
+    	 mySensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+         List<Sensor> mySensors = mySensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
+      
+         if(mySensors.size() > 0){
+          mySensorManager.registerListener(mySensorEventListener, mySensors.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+          sensorrunning = true;
+          Toast.makeText(this, "Start ORIENTATION Sensor", Toast.LENGTH_LONG).show();
+        
+         }
+         else{
+          Toast.makeText(this, "No ORIENTATION Sensor", Toast.LENGTH_LONG).show();
+          sensorrunning = false;
+         }
+    }
+
+
+    private SensorEventListener mySensorEventListener = new SensorEventListener(){
+    	@Override
+    	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    		// TODO Auto-generated method stub
+    	}
+
+    	@Override
+    	public void onSensorChanged(SensorEvent event) {
+    		float  fHeading = (float)event.values[0];
+    		int    iHeading = (int) Math.round(fHeading);
+    		String sHeading = String.format("%03d", iHeading);
+
+    		int direction = (int) Math.round((iHeading/22.5));
+    		if (direction > 15 || direction < 0) {
+    			direction = 0;
+    		}
+        	txt_compass.setText("Heading: "+sHeading+""+degree+" - "+headings[direction]);
+    	}
+    };
     
 	private void drawMarker(GeoPoint point) {		
 		List<Overlay> mapOverlays = mapView.getOverlays();
