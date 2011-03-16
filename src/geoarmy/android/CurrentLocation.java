@@ -249,10 +249,10 @@ public class CurrentLocation extends MapActivity {
     	if (len < 0) {
     		return;
     	}
+    	
     	ArrayList<location> localArray = mylocationList.getLocations();
     	location localLocation = new location();
-    	
-    	
+    	    	
     	int myLat = 0;
     	int myLon = 0;
     	double closestTreasureDistance = 99999999;
@@ -272,7 +272,7 @@ public class CurrentLocation extends MapActivity {
     		}
     			
         	overlayTreasure = new OverlayItem(treasurepoint, localLocation.getName(), "Point: " + treasurepoint);
-        	treasureOverlay.addOverlay(overlayTreasure);
+        	treasureOverlay.addOverlay(overlayTreasure, localLocation);
         	mapOverlays.add(treasureOverlay); // add new marker
          }
     	
