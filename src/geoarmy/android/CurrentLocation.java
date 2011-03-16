@@ -18,6 +18,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.FloatMath;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -194,6 +195,20 @@ public class CurrentLocation extends MapActivity {
     	}
     }
     
+    
+    private double gps2m(float lat_a, float lng_a, float lat_b, float lng_b) {
+       float pk = (float) (180/3.14169);
+       float a1 = lat_a / pk;
+       float a2 = lng_a / pk;
+       float b1 = lat_b / pk;
+       float b2 = lng_b / pk;
+       float t1 = FloatMath.cos(a1)*FloatMath.cos(a2)*FloatMath.cos(b1)*FloatMath.cos(b2);
+       float t2 = FloatMath.cos(a1)*FloatMath.sin(a2)*FloatMath.cos(b1)*FloatMath.sin(b2);
+       float t3 = FloatMath.sin(a1)*FloatMath.sin(b1);
+       double tt = Math.acos(t1 + t2 + t3);
+       return 6366000*tt;
+    }
+
     private final void drawGeocaches(locationList mylocationList) {
     	 if (mylocationList == null) {
     		 return;
@@ -222,12 +237,22 @@ public class CurrentLocation extends MapActivity {
     	
     	int myLat = 0;
     	int myLon = 0;
+    	double closestTreasureDistance = 99999999;
+    	GeoPoint closestPoint = null;
+    	
     	for (int i = 0; i < len; i++) {
     		localLocation = localArray.get(i);
     		myLat = (int) (Double.parseDouble(localLocation.getLat())*1E6);
     		myLon = (int) (Double.parseDouble(localLocation.getLon())*1E6);
+    		
     		treasurepoint = new GeoPoint(myLat, myLon);
-
+    		double distance = gps2m(treasurepoint.getLatitudeE6(), treasurepoint.getLongitudeE6(), point.getLatitudeE6(), point.getLongitudeE6());
+    		if(distance < closestTreasureDistance)
+    		{
+    			closestTreasureDistance = distance;
+    			closestPoint = treasurepoint;
+    		}
+    			
         	overlayTreasure = new OverlayItem(treasurepoint, localLocation.getName(), "Point: " + treasurepoint);
         	treasureOverlay.addOverlay(overlayTreasure);
         	mapOverlays.add(treasureOverlay); // add new marker
@@ -236,7 +261,27 @@ public class CurrentLocation extends MapActivity {
     	txt_geocount.setText("Geocache count: " + len);
     	drawMarker(point);
         mapController.setCenter(point);
+        
+    	int zoomLevel = 17;
+    	if(closestPoint != null){
+    	    mapController.zoomToSpan(
+    	            (point.getLatitudeE6() > closestPoint.getLatitudeE6()
+    	                ? point.getLatitudeE6() - closestPoint.getLatitudeE6()
+    	                : closestPoint.getLatitudeE6() - point.getLatitudeE6()),
+    	            (point.getLongitudeE6() > closestPoint.getLongitudeE6()
+    	                ? point.getLongitudeE6() - closestPoint.getLongitudeE6()
+    	                : closestPoint.getLongitudeE6() - point.getLongitudeE6()));
+    	            mapController.animateTo(
+    	                new GeoPoint(
+    	                		point.getLatitudeE6() - ((point.getLatitudeE6() - closestPoint.getLatitudeE6())/2),
+    	                    point.getLongitudeE6() - ((point.getLongitudeE6() - closestPoint.getLongitudeE6())/2)
+    	                ));
+
+        	mapController.setZoom(zoomLevel);
+    	}
     }
+    
+    
     
 	public void getGPS() {
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
