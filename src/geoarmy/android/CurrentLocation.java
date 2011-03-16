@@ -19,6 +19,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.FloatMath;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,6 +34,9 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 
 public class CurrentLocation extends MapActivity {
+	
+	private static final String TAG = "MapActivity";
+	
 	MapController mapController;
 	MapView mapView;
 	StaticItemizedOverlay treasureOverlay;
@@ -62,6 +66,7 @@ public class CurrentLocation extends MapActivity {
 	
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
+    	Log.d(TAG, "onCreate");
         super.onCreate(bundle);
        
         setContentView(R.layout.main); // bind the layout to the activity
@@ -103,6 +108,7 @@ public class CurrentLocation extends MapActivity {
     }
     
     public void enableGPS() {
+    	Log.d(TAG, "enableGPS");
         /** Check if GPS is enabled, if not prompt the user to enable it **/
         if (!NetworkTools.gpsEnabled(context)) {
         	MessageTools.createGpsDisabledAlert(context);
@@ -110,17 +116,20 @@ public class CurrentLocation extends MapActivity {
     }
     
     public void setGPSPing() {
+    	Log.d(TAG, "setGPSPing");
     	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
     	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new GeoUpdateHandler());
     }
 
     public static locationList getCurrentLocationList() {
+    	Log.d(TAG, "getCurrentLocationList");
     	currentLocationList.length();
     	return currentLocationList;
     }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+    	Log.d(TAG, "onCreateOptionsMenu");
     	MenuInflater inflater = getMenuInflater();
     	inflater.inflate(R.menu.menu, menu);
     	return super.onCreateOptionsMenu(menu);
@@ -128,6 +137,7 @@ public class CurrentLocation extends MapActivity {
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+    	Log.d(TAG, "onOptionsItemSelected");
         // Handle all of the possible menu actions.
     	switch (item.getItemId()) {
         case ACCOUNT_ID:
@@ -147,21 +157,25 @@ public class CurrentLocation extends MapActivity {
     }
     
     private final void listView() {
+    	Log.d(TAG, "listView");
     	Intent i = new Intent(this, geocacheListActivity.class);
     	startActivity(i);
     }
      
     private final void editAccount() {
+    	Log.d(TAG, "editAccount");
     	Intent i = new Intent(this, account.class);
     	startActivity(i);
     }
     
     private final void centerMap() {
+    	Log.d(TAG, "centerMap");
     	GeoPoint point = new GeoPoint(latitude,longitude);
     	mapController.animateTo(point);
 	}
     
     public void onGeocachesResult(locationList mylocationList) {
+    	Log.d(TAG, "onGeocachesResult");
     	currentLocationList.clearLocations();
     	currentLocationList = mylocationList;
     	drawGeocaches(currentLocationList);
@@ -169,6 +183,7 @@ public class CurrentLocation extends MapActivity {
     }
     
     public void onNetworkError(String error) {
+    	Log.d(TAG, "onNetworkError");
     	if (!(m_ProgressDialog == null) && m_ProgressDialog.isShowing()) {
     		m_ProgressDialog.dismiss();
     	}
@@ -176,6 +191,7 @@ public class CurrentLocation extends MapActivity {
     }
     
     private final void getGeocaches() {
+    	Log.d(TAG, "getGeocaches");
     	if (!UserPreferences.getLoggedIn(context)) {
     		Toast.makeText(context, "You are not logged in", Toast.LENGTH_LONG).show();
     		return;
@@ -197,6 +213,7 @@ public class CurrentLocation extends MapActivity {
     
     
     private double gps2m(float lat_a, float lng_a, float lat_b, float lng_b) {
+    	Log.d(TAG, "gps2m");
        float pk = (float) (180/3.14169);
        float a1 = lat_a / pk;
        float a2 = lng_a / pk;
@@ -210,6 +227,7 @@ public class CurrentLocation extends MapActivity {
     }
 
     private final void drawGeocaches(locationList mylocationList) {
+    	Log.d(TAG, "drawGeocaches");
     	 if (mylocationList == null) {
     		 return;
     	 }
@@ -284,21 +302,25 @@ public class CurrentLocation extends MapActivity {
     
     
 	public void getGPS() {
+		Log.d(TAG, "getGPS");
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new GeoUpdateHandler());
 	}
     
     @SuppressWarnings("unused")
 	private final void hideMenu() {
+    	Log.d(TAG, "hideMenu");
     	
     }
     
     @Override
     protected boolean isRouteDisplayed() {
+    	Log.v(TAG, "isRouteDisplayed");
     	return false;
     }
     
-    private void initCompass() {    	 
+    private void initCompass() {
+    	Log.d(TAG, "initCompass");
     	 mySensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
          List<Sensor> mySensors = mySensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
       
@@ -318,11 +340,13 @@ public class CurrentLocation extends MapActivity {
     private SensorEventListener mySensorEventListener = new SensorEventListener(){
     	@Override
     	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    		Log.v(TAG, "onAccuracyChanged");
     		// TODO Auto-generated method stub
     	}
 
     	@Override
     	public void onSensorChanged(SensorEvent event) {
+    		Log.v(TAG, "onSensorChanged");
     		float  fHeading = (float)event.values[0];
     		int    iHeading = (int) Math.round(fHeading);
     		String sHeading = String.format("%03d", iHeading);
@@ -335,7 +359,8 @@ public class CurrentLocation extends MapActivity {
     	}
     };
     
-	private void drawMarker(GeoPoint point) {		
+	private void drawMarker(GeoPoint point) {
+		Log.d(TAG, "drawMarker");
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		int hunterIdx = mapOverlays.indexOf(hunterOverlay);
 		if (hunterIdx >= 0 && !mapOverlays.isEmpty()) {
@@ -351,6 +376,7 @@ public class CurrentLocation extends MapActivity {
     public class GeoUpdateHandler implements LocationListener {
        	
     	public void onLocationChanged(Location location) {
+    		Log.d(TAG, "onLocationChanged");
     		
     		if (location != null) {
     			latitude = (int) (location.getLatitude()*1E6);
@@ -372,12 +398,15 @@ public class CurrentLocation extends MapActivity {
        	}
   	  	
     	public void onProviderDisabled(String provider) {
+    		Log.d(TAG, "onProviderDisabled");
     	}
     	
     	public void onProviderEnabled(String provider) {
+    		Log.d(TAG, "onProviderEnabled");
     	}
     	
     	public void onStatusChanged(String provider, int status, Bundle extras) {
+    		Log.d(TAG, "onStatusChanged");
     	}
     }
 }
