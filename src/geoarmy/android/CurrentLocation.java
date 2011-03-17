@@ -16,11 +16,16 @@ import android.hardware.SensorManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewStub;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,6 +47,7 @@ public class CurrentLocation extends MapActivity {
 	String currentStatus;
 	UserPreferences userPrefs;
 	char degree = '\u00B0';
+	View splashpanel;
 	
 	/** Compass stuff **/
 	private static SensorManager mySensorManager;
@@ -58,19 +64,21 @@ public class CurrentLocation extends MapActivity {
     public static locationList currentLocationList = new locationList();
     final Context context = CurrentLocation.this;
 	final Handler mHandler = new Handler();
+	ProgressBar progressBar;
+	TextView loadingText;
 	
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
-        super.onCreate(bundle);
-       
+        super.onCreate(bundle);           
         setContentView(R.layout.main); // bind the layout to the activity
-        enableGPS();
         
-        /** Set up Compass    **/
-        initCompass();
-        /** Set up GPS pinger **/
-        setGPSPing();
-        
+        /**Set splash panel to inflate!**/
+        splashpanel = ((ViewStub) findViewById(R.id.stub_import)).inflate();
+        loadingText = (TextView)findViewById(R.id.loadingText);
+        loadingText.setText("Loading...");
+        progressBar = (ProgressBar)findViewById(R.id.progressbar_Horizontal);
+        progressBar.setProgress(0);
+     
         // lat-lng text
         txt_lng = (TextView) findViewById(R.id.location_text_lng);
         txt_lat = (TextView) findViewById(R.id.location_text_lat); 
@@ -79,6 +87,63 @@ public class CurrentLocation extends MapActivity {
         // Compass text
         txt_compass = (TextView) findViewById(R.id.status_text_01);
         
+        
+        new Load().execute();
+    }
+
+    private void finalLoadActions() {
+    	splashpanel.setVisibility(View.INVISIBLE);
+    	mapView.invalidate();
+    	getGeocaches();
+    	drawGeocaches(currentLocationList);	
+    }
+    
+    private class Load extends AsyncTask<String, Void, Void>{
+    	
+        protected void onPostExecute(final Void unused) {
+        	finalLoadActions();
+        }
+
+		protected Void doInBackground(String... params) {
+			Looper.prepare();
+
+            /** Create maps       **/
+            createMap();
+            onProgressUpdate(20);
+        	/** Set up GPS        **/
+            enableGPS();
+            onProgressUpdate(40);
+            /** Set up Compass    **/
+            initCompass();
+            onProgressUpdate(60);
+            /** Set up GPS pinger **/
+            setGPSPing();
+            onProgressUpdate(80);
+            /** Login             **/
+            login();
+            onProgressUpdate(100);
+
+            return null;
+		}
+		
+		protected void onProgressUpdate(Integer... values) {    
+			progressBar.setProgress(values[0]);
+		}
+    }
+
+    private void login() {
+        String username = UserPreferences.getUsername(context);
+        String password = UserPreferences.getPassword(context);
+        NetworkTools.authenticate(username, password, mHandler, context, false);
+        if (UserPreferences.getLoggedIn(context)) {
+        	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
+        } else {
+        	Toast.makeText(context, "Failed to log into your account", Toast.LENGTH_LONG).show();
+        }
+        
+    }
+    
+    private void createMap() {
         // create a map view
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
@@ -86,25 +151,12 @@ public class CurrentLocation extends MapActivity {
         mapController = mapView.getController();
         mapController.setZoom(17);
         mapView.setSatellite(false);
-        mapView.invalidate();
-      
-        String username = UserPreferences.getUsername(context);
-        String password = UserPreferences.getPassword(context);
-        
-        NetworkTools.authenticate(username, password, mHandler, context, false);
-        if (UserPreferences.getLoggedIn(context)) {
-        	Toast.makeText(context, "Successfully logged into your account", Toast.LENGTH_LONG).show();
-        	getGeocaches();
-        	drawGeocaches(currentLocationList);
-        } else {
-        	Toast.makeText(context, "Failed to log into your account", Toast.LENGTH_LONG).show();
-        }
     }
     
     public void enableGPS() {
         /** Check if GPS is enabled, if not prompt the user to enable it **/
         if (!NetworkTools.gpsEnabled(context)) {
-        	MessageTools.createGpsDisabledAlert(context);
+        	//MessageTools.createGpsDisabledAlert(context);
         }
     }
     
@@ -260,11 +312,11 @@ public class CurrentLocation extends MapActivity {
          if(mySensors.size() > 0){
           mySensorManager.registerListener(mySensorEventListener, mySensors.get(0), SensorManager.SENSOR_DELAY_NORMAL);
           sensorrunning = true;
-          Toast.makeText(this, "Start ORIENTATION Sensor", Toast.LENGTH_LONG).show();
+          //Toast.makeText(this, "Start ORIENTATION Sensor", Toast.LENGTH_LONG).show();
         
          }
          else{
-          Toast.makeText(this, "No ORIENTATION Sensor", Toast.LENGTH_LONG).show();
+          //Toast.makeText(this, "No ORIENTATION Sensor", Toast.LENGTH_LONG).show();
           sensorrunning = false;
          }
     }
