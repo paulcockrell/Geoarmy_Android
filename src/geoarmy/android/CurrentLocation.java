@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
 import android.os.Looper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -72,6 +73,8 @@ public class CurrentLocation extends MapActivity {
 	ProgressBar progressBar;
 	TextView loadingText;
 	
+	private Load task=null;
+	
 	/** Called when the activity is first created. */
     public void onCreate(Bundle bundle) {
     	Log.d(TAG, "onCreate");
@@ -93,48 +96,109 @@ public class CurrentLocation extends MapActivity {
         // Compass text
         txt_compass = (TextView) findViewById(R.id.status_text_01);
         
-        
-        new Load().execute();
-    }
+        /** Splash handler stuffs **/
+        task=(Load)getLastNonConfigurationInstance();
 
-    private void finalLoadActions() {
-    	splashpanel.setVisibility(View.INVISIBLE);
-    	mapView.invalidate();
-    	getGeocaches();
-    	drawGeocaches(currentLocationList);	
-    }
-    
-    private class Load extends AsyncTask<String, Void, Void>{
-    	
-        protected void onPostExecute(final Void unused) {
-        	finalLoadActions();
+        if (task==null) {
+        	task=new Load(this);
+        	task.execute();
+        } else {
+        	task.attach(this);
+        	updateProgress(task.getProgress());
+        	if (task.getProgress()>=100) {
+        		markAsDone();
+        	}
         }
 
-		protected Void doInBackground(String... params) {
-			Looper.prepare();
+    }
+    
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+    	task.detach();
+    	return(task);
+    }
 
-            /** Create maps       **/
-            createMap();
-            onProgressUpdate(20);
-        	/** Set up GPS        **/
-            enableGPS();
-            onProgressUpdate(40);
-            /** Set up Compass    **/
-            initCompass();
-            onProgressUpdate(60);
-            /** Set up GPS pinger **/
-            setGPSPing();
-            onProgressUpdate(80);
+    void updateProgress(int progress) {
+    	if (progress <= 25) {
+    		loadingText.setText("Attempting login");  
+    	} else if (progress <= 50) {
+    		loadingText.setText("Creating maps");
+    	} else if (progress <= 75) {
+    		loadingText.setText("Initializing compass");
+    	} else if (progress <= 100) {
+    		loadingText.setText("Drawing maps");
+    	} 
+    	progressBar.setProgress(progress);
+    }
+
+    void markAsDone() {
+    	//findViewById(R.id.completed).setVisibility(View.VISIBLE);
+    }
+    
+    private class Load extends AsyncTask<Void, Void, Void> {
+		CurrentLocation activity=null;
+		int progress=0;
+	
+    	protected void onPreExecute() {
+			/** Set up GPS pinger **/
+            activity.setGPSPing();	
+			publishProgress();
+    	}
+    	
+        protected void onPostExecute(final Void unused) {
+
+			mapView.invalidate();
+        	/** Geocaches, this breaks in the main 
+             *  part of the thread, possibly because
+             *  it spawns anther thread? who knows
+             *  so this is why its here.. **/
+        	getGeocaches();
+        	drawGeocaches(currentLocationList);	
+
+        	splashpanel.setVisibility(View.INVISIBLE);
+        }
+
+		protected Void doInBackground(Void... unused) {
+			Looper.prepare();
             /** Login             **/
             login();
-            onProgressUpdate(100);
+			publishProgress();
+            /** Create maps       **/
+            createMap();
+			publishProgress();
+            /** Set up Compass    **/
+            initCompass();
+			publishProgress();
 
-            return null;
+			return null;
 		}
 		
-		protected void onProgressUpdate(Integer... values) {    
-			progressBar.setProgress(values[0]);
+		protected void onProgressUpdate(Void... unused) {
+			//activity.updateProgress("haha");
+			//progressBar.setProgress(values[0]);
+			progress += 25;
+			activity.updateProgress(progress);
 		}
+		
+		Load(CurrentLocation activity) {
+			attach(activity);
+		}
+		
+		int getProgress() {
+			return(progress);
+		}
+		
+		void detach() {
+			activity=null;
+		}
+
+		void attach(CurrentLocation activity) {
+			this.activity=activity;
+		}
+    }
+    
+    void updateProgress(String sometext) {
+    	loadingText.setText(sometext);
     }
 
     private void login() {
@@ -159,20 +223,6 @@ public class CurrentLocation extends MapActivity {
         mapView.setSatellite(false);
     }
     
-    public void enableGPS() {
-    	Log.d(TAG, "enableGPS");
-        /** Check if GPS is enabled, if not prompt the user to enable it **/
-        if (!NetworkTools.gpsEnabled(context)) {
-        	//MessageTools.createGpsDisabledAlert(context);
-        }
-    }
-    
-    public void setGPSPing() {
-    	Log.d(TAG, "setGPSPing");
-    	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new GeoUpdateHandler());
-    }
-
     public static locationList getCurrentLocationList() {
     	Log.d(TAG, "getCurrentLocationList");
     	currentLocationList.length();
@@ -351,14 +401,6 @@ public class CurrentLocation extends MapActivity {
     	}
     }
     
-    
-    
-	public void getGPS() {
-		Log.d(TAG, "getGPS");
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 0, new GeoUpdateHandler());
-	}
-    
     @SuppressWarnings("unused")
 	private final void hideMenu() {
     	Log.d(TAG, "hideMenu");
@@ -425,12 +467,25 @@ public class CurrentLocation extends MapActivity {
         mapOverlays.add(hunterOverlay); // add new marker
 	}
     
+    public void enableGPS() {
+        /** Check if GPS is enabled, if not prompt the user to enable it **/
+        if (!NetworkTools.gpsEnabled(context)) {
+        	//MessageTools.createGpsDisabledAlert(context);
+        	Toast.makeText(context, "GPS is not enabled!", Toast.LENGTH_LONG).show();
+        }
+    }
+    
+    public void setGPSPing() {
+    	Log.d("setgpsping", "SETTING PINGOID");
+    	LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2500, 0, new GeoUpdateHandler());
+    }
+    
     public class GeoUpdateHandler implements LocationListener {
-       	
+
     	public void onLocationChanged(Location location) {
     		Log.d(TAG, "onLocationChanged");
-    		
-    		if (location != null) {
+           	if (location != null) {
     			latitude = (int) (location.getLatitude()*1E6);
     			longitude = (int) (location.getLongitude()*1E6);
     		 
@@ -440,9 +495,6 @@ public class CurrentLocation extends MapActivity {
 	    		String currentLng = "Lng: " + location.getLongitude();
 	    		txt_lat.setText(currentLat);
 	    		txt_lng.setText(currentLng);
-	    		
-	    		currentStatus = "GPS: Active";
-	    		// txt_gps.setText(currentStatus);
 	    		
 	    		drawMarker(point);
 	    		//mapController.animateTo(point); always keep hunter in middle of map

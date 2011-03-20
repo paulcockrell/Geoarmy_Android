@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent"
     	android:orientation="vertical"
-    	android:gravity="top"
+    	android:gravity="center_vertical|center_horizontal"
     	android:paddingLeft="5px"
     	android:paddingRight="5px"
     	android:paddingTop="5px"
     	android:background="#000000"
     	>
-    	
+    <ImageView 
+		android:id="@+id/ImageView01"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:src="@drawable/android_logo_small"
+		android:paddingBottom="85px">
+	</ImageView>
 	<TextView
 		android:text="Loading..."
 		android:id="@+id/loadingText"
-		android:gravity="center_vertical|center_horizontal"
+		android:gravity="center_horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"/>
 	<ProgressBar 
@@ -22,5 +28,4 @@
 		android:max="100"
 		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"/>
-
 </LinearLayout>
