@@ -148,12 +148,7 @@ public class CurrentLocation extends MapActivity {
              *  so this is why its here.. **/
         	getGeocaches();
         	drawGeocaches(currentLocationList);	
-        	try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
         	splashpanel.setVisibility(View.INVISIBLE);
         }
 
