@@ -134,6 +134,9 @@ public class CurrentLocation extends MapActivity {
 		int progress=0;
 	
     	protected void onPreExecute() {
+			/** Set up GPS pinger **/
+            activity.setGPSPing();	
+			publishProgress();
     	}
     	
         protected void onPostExecute(final Void unused) {
@@ -165,11 +168,8 @@ public class CurrentLocation extends MapActivity {
             /** Set up Compass    **/
             initCompass();
 			publishProgress();
-			/** Set up GPS pinger **/
-            activity.setGPSPing();	
-			publishProgress();
 
-            return null;
+			return null;
 		}
 		
 		protected void onProgressUpdate(Void... unused) {
@@ -410,7 +410,8 @@ public class CurrentLocation extends MapActivity {
     public void enableGPS() {
         /** Check if GPS is enabled, if not prompt the user to enable it **/
         if (!NetworkTools.gpsEnabled(context)) {
-        	MessageTools.createGpsDisabledAlert(context);
+        	//MessageTools.createGpsDisabledAlert(context);
+        	Toast.makeText(context, "GPS is not enabled!", Toast.LENGTH_LONG).show();
         }
     }
     
