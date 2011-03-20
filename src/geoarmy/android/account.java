@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,6 +24,7 @@ public class account extends Activity {
 	 */
 	public void onCreate(Bundle savedInstanceState)
 	{
+		Log.d(TAG, "onCreate");
 	    super.onCreate(savedInstanceState);
 	    setContentView(R.layout.editaccount);
 	    
@@ -56,12 +58,14 @@ public class account extends Activity {
 	    
 	    closeButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
+				Log.d(TAG, "onClick");
 				finish();
 			}
 	    });
 	}
 	
 	private boolean validateForm(Context context, String username, String password) {
+		Log.d(TAG, "validateForm");
 		if (username.trim().length() == 0 || password.trim().length() == 0)
 		{
 			Toast.makeText(context, "All fields are required", Toast.LENGTH_LONG).show();
@@ -71,6 +75,7 @@ public class account extends Activity {
 	}
 	
 	private boolean authenticateUser(String username, String password) {
+		Log.d(TAG, "authenticateUser");
 		boolean authenticated = false;
 		final Context context = account.this;
 	    final Handler mHandler = new Handler();
@@ -79,6 +84,7 @@ public class account extends Activity {
 	                "Please wait...", "Validating account details...", true);
 			authenticated = NetworkTools.authenticate(username, password, mHandler, context, true);    				    				
 		} catch (Exception e) {
+			Log.d(TAG, "Exception " + e.getMessage());
 			// Oppps!!! maybe log message 
 			return authenticated;
 		}
@@ -88,6 +94,7 @@ public class account extends Activity {
 	
 	 
     public void onAuthenticationResult(boolean result) {
+    	Log.d(TAG, "onAuthenticationResult");
     	m_ProgressDialog.dismiss();
     	if (result) {
     		Toast.makeText(account.this, "Account validated", Toast.LENGTH_LONG).show();

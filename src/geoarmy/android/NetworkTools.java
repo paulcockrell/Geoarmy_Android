@@ -51,7 +51,8 @@ public class NetworkTools {
      * Configures the httpClient to connect to the URL provided.
      */
     public static void maybeCreateHttpClient() {
-        if (mHttpClient == null) {
+    	Log.d(TAG, "maybeCreateHttpClient");
+    	if (mHttpClient == null) {
             mHttpClient = new DefaultHttpClient();
             final HttpParams params = mHttpClient.getParams();
             HttpConnectionParams.setConnectionTimeout(params,
@@ -68,7 +69,8 @@ public class NetworkTools {
      *        be executed.
      */
     public static Thread performOnBackgroundThread(final Runnable runnable) {
-        final Thread t = new Thread() {
+    	Log.d(TAG, "performOnBackgroundThread");
+    	final Thread t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -83,7 +85,8 @@ public class NetworkTools {
     }
 
 	public static String getToken() {
-	   	final HttpResponse resp;
+		Log.d(TAG, "getToken");
+    	final HttpResponse resp;
 	   	final String url = BASEURL + tokenUrl;
 	   	
         String respString;
@@ -131,7 +134,8 @@ public class NetworkTools {
 	}
 	  
     public static Thread attemptAuth(final String name, final String password, final Handler handler, final Context context, final boolean onSuccessMsg) {
-            final Runnable runnable = new Runnable() {
+    	Log.d(TAG, "attemptAuth");
+    	final Runnable runnable = new Runnable() {
                 public void run() {
                     authenticate(name, password, handler, context, onSuccessMsg);
                 }
@@ -141,6 +145,7 @@ public class NetworkTools {
         }
 
 	public static boolean authenticate(String name, String password, Handler handler, final Context context, boolean onSuccessMsg) {
+		Log.d(TAG, "authenticate");
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + authenticateURL;
@@ -204,7 +209,8 @@ public class NetworkTools {
     }
     
 	public static boolean getLocations(double latitude, double longitude, Handler handler, Context context) {
-		locationList treasureLocations = new locationList();
+		Log.d(TAG, "getLocations");
+    	locationList treasureLocations = new locationList();
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + geocacheURL;
@@ -257,7 +263,8 @@ public class NetworkTools {
     }
 	
 	public static boolean getGeocache(int geocacheId, Handler handler, Context context) {
-		location geocache = new location();
+		Log.d(TAG, "getGeocache");
+    	location geocache = new location();
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + geocacheURL;
@@ -311,6 +318,7 @@ public class NetworkTools {
     }
 	
 	public static boolean geocacheAction(int geocacheID, String action, Handler handler, final Context context) {
+		Log.d(TAG, "geocacheAction");
     	final HttpResponse resp;
         String respString;
 		boolean result;
@@ -380,6 +388,7 @@ public class NetworkTools {
     }
 	
     private static locationList newLocationList(String JSONString) {
+    	Log.d(TAG, "newLocationList");
     	locationList mylocationList = new locationList();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -406,6 +415,7 @@ public class NetworkTools {
     }
 
 	private static location newGeocache(String JSONString) {
+		Log.d(TAG, "newGeocache");
     	location geocache = new location();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -437,6 +447,7 @@ public class NetworkTools {
     }
     
     private static String convertStreamToString(InputStream is, boolean newline){
+    	Log.d(TAG, "convertStreamToString");
     	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     	StringBuilder sb = new StringBuilder();
     	
@@ -462,6 +473,7 @@ public class NetworkTools {
     }
     
     private static boolean connectionResult(String JSONString) {
+    	Log.d(TAG, "connectionResult");
     	String strResult = "false";
     	Log.d(TAG, JSONString);
     	try {
@@ -494,6 +506,7 @@ public class NetworkTools {
      */
     private static void sendResult(final Boolean result, final Handler handler,
         final Context context) {
+		Log.d(TAG, "sendResult");
         if (handler == null || context == null) {
             return;
         }
@@ -514,6 +527,7 @@ public class NetworkTools {
      */
     private static void sendGeocacheActionResult(final Boolean result, final String action, final Handler handler,
         final Context context) {
+    	Log.d(TAG, "sendGeocacheActionResult");
         if (handler == null || context == null) {
             return;
         }
@@ -534,6 +548,7 @@ public class NetworkTools {
      */
     private static void sendGeocachesResult(final locationList result, final Handler handler,
         final Context context) {
+    	Log.d(TAG, "sendGeocachesResult");
         if (handler == null || context == null) {
             return;
         }
@@ -554,6 +569,7 @@ public class NetworkTools {
      */
     private static void sendGeocacheResult(final location result, final Handler handler,
         final Context context) {
+    	Log.d(TAG, "sendGeocacheResult");
         if (handler == null || context == null) {
             return;
         }
@@ -566,6 +582,7 @@ public class NetworkTools {
     
     private static void sendGeocacheShowError(final String result, final Handler handler,
             final Context context) {
+    	Log.d(TAG, "sendGeocacheShowError");
         if (handler == null || context == null) {
             return;
         }
@@ -578,6 +595,7 @@ public class NetworkTools {
     
     private static void sendNetworkError(final String result, final Handler handler,
             final Context context) {
+    	Log.d(TAG, "sendNetworkError");
         if (handler == null || context == null) {
             return;
         }
@@ -589,6 +607,7 @@ public class NetworkTools {
     }
     
 	public static boolean gpsEnabled(Context context) {
+		Log.d(TAG, "gpsEnabled");
     	LocationManager locManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);  
     	return locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	}

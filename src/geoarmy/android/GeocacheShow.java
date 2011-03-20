@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class GeocacheShow extends Activity {
+	private static final String TAG = "GeocacheShow";
 	private static final CharSequence DECLARE_FOUND    = " Add to found";
 	private static final CharSequence REMOVE_FOUND     = " Remove found";
 	private static final CharSequence DECLARE_FAVORITE = " Add to favourite";
@@ -32,6 +34,7 @@ public class GeocacheShow extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		Log.d(TAG, "onCreate");
 		setContentView(R.layout.show);
 		final Context context = GeocacheShow.this;
 		final Handler mHandler = new Handler();
@@ -63,6 +66,7 @@ public class GeocacheShow extends Activity {
 
 	private void declareGeocacheFound(Context context, int gId,
 			boolean foundState) {
+		Log.d(TAG, "declareGeocacheFound");
 		final Handler mHandler = new Handler();
 		String action = "";
 		if (foundState) {
@@ -78,6 +82,7 @@ public class GeocacheShow extends Activity {
 
 	private void declareGeocacheFavorite(Context context, int gId,
 			boolean favoriteState) {
+		Log.d(TAG, "declareGeocacheFavorite");
 		final Handler mHandler = new Handler();
 		String action = "";
 		if (favoriteState) {
@@ -91,6 +96,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	private void drawScreen(final location geocache) {
+		Log.d(TAG, "drawScreen");
 		// test dynamic add to linearlayour in scroll view, works but do we need
 		// it?
 		// TextView textView = new TextView(this);
@@ -113,6 +119,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	private void setButtonListeners() {
+		Log.d(TAG, "setButtonListeners");
 		foundButton.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				try {
@@ -136,6 +143,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	public void setButtonText() {
+		Log.d(TAG, "setButtonText");
 		if (thisGeocache.getFound()) {
 			foundButton.setText(REMOVE_FOUND);
 			Drawable d = getResources().getDrawable(R.drawable.star_delete);
@@ -161,6 +169,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	public void onGeocacheResult(location geocache) {
+		Log.d(TAG, "onGeocacheResult");
 		thisGeocache = geocache;
 		drawScreen(thisGeocache);
 		setButtonText();
@@ -169,6 +178,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	public void onNetworkError(String error) {
+		Log.d(TAG, "onNetworkError");
 		if (!(m_ProgressDialog == null) && m_ProgressDialog.isShowing()) {
 			m_ProgressDialog.dismiss();
 		}
@@ -177,6 +187,7 @@ public class GeocacheShow extends Activity {
 	}
 
 	public void onGeocacheActionResult(Boolean result, String action) {
+		Log.d(TAG, "onGeocacheActionResult");
 		final Context context = GeocacheShow.this;
 		if (result) {
 			if (action == "addfound") {
