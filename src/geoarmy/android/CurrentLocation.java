@@ -332,7 +332,7 @@ public class CurrentLocation extends MapActivity {
     	drawMarker(point);
         mapController.setCenter(point);
         
-    	int zoomLevel = 17;
+    	//int zoomLevel = 17;
     	if(closestPoint != null){
     	    mapController.zoomToSpan(
     	            (point.getLatitudeE6() > closestPoint.getLatitudeE6()
@@ -347,7 +347,7 @@ public class CurrentLocation extends MapActivity {
     	                    point.getLongitudeE6() - ((point.getLongitudeE6() - closestPoint.getLongitudeE6())/2)
     	                ));
 
-        	mapController.setZoom(zoomLevel);
+        	//mapController.setZoom(zoomLevel);
     	}
     }
     
