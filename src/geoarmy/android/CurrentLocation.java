@@ -22,7 +22,6 @@ import android.os.Handler;
 import android.util.FloatMath;
 import android.util.Log;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,7 +65,7 @@ public class CurrentLocation extends MapActivity {
 	private static final int CENTER_ID  = R.id.center;
 	private static final int LIST_ID    = R.id.geocachelist;
     private ProgressDialog m_ProgressDialog = null; 
-    
+ 
     public static locationList currentLocationList = new locationList();
     final Context context = CurrentLocation.this;
 	final Handler mHandler = new Handler();
@@ -98,18 +97,16 @@ public class CurrentLocation extends MapActivity {
         
         /** Splash handler stuffs **/
         task=(Load)getLastNonConfigurationInstance();
-
-        if (task==null) {
-        	task=new Load(this);
-        	task.execute();
-        } else {
-        	task.attach(this);
-        	updateProgress(task.getProgress());
-        	if (task.getProgress()>=100) {
-        		markAsDone();
-        	}
-        }
-
+    	if (task==null) {
+    		task=new Load(this);
+    		task.execute();
+    	} else  {
+    		task.attach(this);
+    		updateProgress(task.getProgress());
+    		if (task.getProgress()>=100) {
+    			markAsDone();
+    		}
+    	}        
     }
     
     @Override
@@ -146,7 +143,6 @@ public class CurrentLocation extends MapActivity {
     	}
     	
         protected void onPostExecute(final Void unused) {
-
 			mapView.invalidate();
         	/** Geocaches, this breaks in the main 
              *  part of the thread, possibly because
@@ -419,7 +415,7 @@ public class CurrentLocation extends MapActivity {
          List<Sensor> mySensors = mySensorManager.getSensorList(Sensor.TYPE_ORIENTATION);
       
          if(mySensors.size() > 0){
-          mySensorManager.registerListener(mySensorEventListener, mySensors.get(0), SensorManager.SENSOR_DELAY_NORMAL);
+          mySensorManager.registerListener(mySensorEventListener, mySensors.get(0), SensorManager.SENSOR_DELAY_UI);
           sensorrunning = true;
           //Toast.makeText(this, "Start ORIENTATION Sensor", Toast.LENGTH_LONG).show();
         
@@ -454,7 +450,10 @@ public class CurrentLocation extends MapActivity {
     };
     
 	private void drawMarker(GeoPoint point) {
-		Log.d(TAG, "drawMarker");
+		// dirty hack to stop the thing crashing after reload
+		if (mapView == null) {
+			return;
+		}
 		List<Overlay> mapOverlays = mapView.getOverlays();
 		int hunterIdx = mapOverlays.indexOf(hunterOverlay);
 		if (hunterIdx >= 0 && !mapOverlays.isEmpty()) {
@@ -495,7 +494,6 @@ public class CurrentLocation extends MapActivity {
 	    		String currentLng = "Lng: " + location.getLongitude();
 	    		txt_lat.setText(currentLat);
 	    		txt_lng.setText(currentLng);
-	    		
 	    		drawMarker(point);
 	    		//mapController.animateTo(point); always keep hunter in middle of map
     		}
