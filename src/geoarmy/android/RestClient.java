@@ -16,11 +16,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.util.Log;
 
 public class RestClient {
-	
-	private static final String TAG = "RestClient";
 	
 	public RestClient() {}
 	
@@ -29,7 +26,6 @@ public class RestClient {
 	}
  
     private static String convertStreamToString(InputStream is){
-    	Log.d(TAG, "convertStreamToString");
     	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     	StringBuilder sb = new StringBuilder();
     	
@@ -51,13 +47,11 @@ public class RestClient {
     }
     
     public locationList getGeolocations(String url) {
-    	Log.d(TAG, "getGeolocations");
     	locationList treasureLocations = new locationList();
     	
     	HttpClient httpclient = new DefaultHttpClient();
     	
     	HttpGet httpget = new HttpGet(url);
-    	Log.v("url",url);
     	HttpResponse response;
     	try {
     		response = httpclient.execute(httpget);
@@ -79,7 +73,6 @@ public class RestClient {
     }    
     
     private locationList newLocationList(String JSONString) {
-    	Log.d(TAG, "newLocationList");
     	locationList mylocationList = new locationList();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -98,7 +91,6 @@ public class RestClient {
     	}
     	catch (Exception je) {
     		// catch?
-    		Log.d(TAG, "excpetion " + je.getMessage());
     	}
     	
     	return mylocationList;

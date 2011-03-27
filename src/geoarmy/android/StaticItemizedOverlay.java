@@ -8,14 +8,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.android.maps.ItemizedOverlay;
 import com.google.android.maps.OverlayItem;
 
 public class StaticItemizedOverlay extends ItemizedOverlay<OverlayItem> {
-	
-	private static final String TAG = "StaticItemizedOverlay";
 	
 	private ArrayList<OverlayItem> mOverlays = new ArrayList<OverlayItem>();
 	private ArrayList<location> mLocations = new ArrayList<location>();
@@ -44,7 +41,6 @@ public class StaticItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	
 	@Override
 	protected boolean onTap(int index) {
-	  Log.d(TAG, "onTap");
 	  OverlayItem item = mOverlays.get(index);
 	  final location l = mLocations.get(index);
 	  AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
@@ -53,7 +49,6 @@ public class StaticItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	  dialog.setCancelable(false);
 	  dialog.setPositiveButton("Details", new DialogInterface.OnClickListener() {
 		  	public void onClick(DialogInterface dialog, int id) {
-		  		Log.d(TAG, "onTap id:" + Integer.toString(id));
 		    	Bundle bundle = new Bundle();
 		    	bundle.putString("gId", Integer.toString(l.getId()));
 		    	Intent i = new Intent(mContext, GeocacheShow.class);

@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ParseException;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +22,6 @@ import android.widget.TextView;
 public class geocacheListActivity extends ListActivity {
 	private LayoutInflater mInflater;
 	private Vector<RowData> data;
-	private static String TAG = "geocacheListActivity";
 	RowData rd;
 	/*private Integer[] imgid = {
 	  R.drawable.ruby,R.drawable.center_marker_male,R.drawable.head_bubble,
@@ -36,7 +34,6 @@ public class geocacheListActivity extends ListActivity {
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-	  Log.d(TAG, "onCreate ");
 	  super.onCreate(savedInstanceState);
 	  setContentView(R.layout.list);
 	  mInflater = (LayoutInflater) getSystemService(
@@ -67,9 +64,7 @@ public class geocacheListActivity extends ListActivity {
 	}
    
     private final void showView(long id) {
-    	Log.d(TAG, "showView ");
   	  location localLocation = localArray.get((int) id);
-  		Log.d(TAG, "[[["+localLocation.getName()+"]]]");
     	Bundle bundle = new Bundle();
     	bundle.putString("gId", localLocation.getId().toString());
     	Intent i = new Intent(this, GeocacheShow.class);
@@ -78,7 +73,6 @@ public class geocacheListActivity extends ListActivity {
     }
     
 	public void onListItemClick(ListView parent, View v, int position, long id) {       	
-		Log.d(TAG, "onListItemClick ");
 		showView(id);
 	}
 	
@@ -103,12 +97,10 @@ private class CustomAdapter extends ArrayAdapter<RowData> {
 	public CustomAdapter(Context context, int resource,
 	                        int textViewResourceId, List<RowData> objects) {               
 	  super(context, resource, textViewResourceId, objects);
-	  Log.d(TAG, "CustomAdapter ");
 	}
 	 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {   
-		Log.d(TAG, "getView ");
 		ViewHolder holder = null;
 	       TextView title = null;
 	       TextView detail = null;

@@ -4,10 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 
 public class MessageTools {
-	private static final String TAG = "MessageTools";
 	
 	public MessageTools() {};
 	
@@ -32,7 +30,6 @@ public class MessageTools {
    }
    
    public static void createGpsDisabledAlert(final Context context){  
-	   Log.d(TAG, "createGpsDisabledAlert");
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);  
 	   builder.setMessage("Your GPS is disabled! Would you like to enable it?").setCancelable(false).setPositiveButton("Enable GPS",  
 			   new DialogInterface.OnClickListener(){  
@@ -52,7 +49,6 @@ public class MessageTools {
    }  
    
    private static void showGpsOptions(Context context){
-	   Log.d(TAG, "showGpsOptions");
 	   Intent gpsOptionsIntent = new Intent(  
 			   android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 	   );  

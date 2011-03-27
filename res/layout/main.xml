@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- development map key paulc : android:apiKey="0kIwzAJ2JPnkR_spOcabz7QAsVwtavLhcl0atMw" -->
-<!-- production  map key paulc : android:apiKey="0kIwzAJ2JPnkCu100z7ecCfZl862_wUwoUk6F2Q" -->
-<!-- development map key geist3: android:apiKey="0jlC3WkmwfuXwQZDungWxtZ-MFtoF9ZFJ3qozxw -->
+<!-- production  map key paulc : android:apiKey="0kIwzAJ2JPnkH14dXbCOp-1ewHgQc-Iln4r_1jw" -->
+<!-- development map key geist3: android:apiKey="0jlC3WkmwfuXwQZDungWxtZ-MFtoF9ZFJ3qozxw"-->
 <!-- production  map key geist3: android:apiKey="0jlC3WkmwfuXmawtxCoRGU0dasKDOLq58WCnPAA -->
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/mainlayout"
@@ -14,7 +14,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:apiKey="0kIwzAJ2JPnkR_spOcabz7QAsVwtavLhcl0atMw"
+        android:apiKey="0kIwzAJ2JPnkH14dXbCOp-1ewHgQc-Iln4r_1jw"
     />
     
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -71,6 +71,12 @@
     	android:paddingRight="5px"
     	android:paddingBottom="5px">
     	
+    	<ZoomControls android:id="@+id/zoomcontrols"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center_horizontal"
+		/>
+  
     		<geoarmy.android.TransparentPanel
 					android:id="@+id/transparent_panel_03" 
 			   	    android:layout_width="fill_parent"

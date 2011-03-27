@@ -29,12 +29,11 @@ import geoarmy.android.account;
 import android.content.Context;
 import android.location.LocationManager;
 import android.os.Handler;
-import android.util.Log;
+
 
 public class NetworkTools {
     private static HttpClient mHttpClient;
     public static final int REGISTRATION_TIMEOUT = 30 * 1000; // ms
-    private static final String TAG        = "NetworkUtilities";
 	private static String tokenUrl         = "login/get_auth_token";
 	private static String authenticateURL  = "login/login";
 	private static String geocacheURL      = "geocaches";
@@ -51,7 +50,6 @@ public class NetworkTools {
      * Configures the httpClient to connect to the URL provided.
      */
     public static void maybeCreateHttpClient() {
-    	Log.d(TAG, "maybeCreateHttpClient");
     	if (mHttpClient == null) {
             mHttpClient = new DefaultHttpClient();
             final HttpParams params = mHttpClient.getParams();
@@ -69,7 +67,6 @@ public class NetworkTools {
      *        be executed.
      */
     public static Thread performOnBackgroundThread(final Runnable runnable) {
-    	Log.d(TAG, "performOnBackgroundThread");
     	final Thread t = new Thread() {
             @Override
             public void run() {
@@ -85,7 +82,6 @@ public class NetworkTools {
     }
 
 	public static String getToken() {
-		Log.d(TAG, "getToken");
     	final HttpResponse resp;
 	   	final String url = BASEURL + tokenUrl;
 	   	
@@ -111,30 +107,17 @@ public class NetworkTools {
             respString = convertStreamToString(instream, false);
             
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Successful authentication");
-                }
                 return respString;
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
-                }
                 return respString;
             }
         } catch (final IOException e) {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "IOException when getting authtoken", e);
-            }
             return "false";
         } finally {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "getAuthtoken completing");
-            }
         }
 	}
 	  
     public static Thread attemptAuth(final String name, final String password, final Handler handler, final Context context, final boolean onSuccessMsg) {
-    	Log.d(TAG, "attemptAuth");
     	final Runnable runnable = new Runnable() {
                 public void run() {
                     authenticate(name, password, handler, context, onSuccessMsg);
@@ -145,7 +128,6 @@ public class NetworkTools {
         }
 
 	public static boolean authenticate(String name, String password, Handler handler, final Context context, boolean onSuccessMsg) {
-		Log.d(TAG, "authenticate");
     	final HttpResponse resp;
         String respString;
         String url = BASEURL + authenticateURL;
@@ -174,9 +156,6 @@ public class NetworkTools {
             resp = mHttpClient.execute(post, localContext);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Successful authentication");
-                }
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
@@ -185,31 +164,21 @@ public class NetworkTools {
                 	sendResult(isLoggedIn, handler, context);
                 } 
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
-                }
                 UserPreferences.setLoggedIn(false);
                 sendNetworkError("Error authenticating, check you username and password", handler, context);
                 return false;
             }
         } catch (final IOException e) {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "IOException when getting authtoken", e);
-            }
             UserPreferences.setLoggedIn(false);
             sendNetworkError("IO Exception when authenticating", handler, context);
             return false;
         } finally {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "getAuthtoken completing");
-            }
         }
         UserPreferences.setLoggedIn(isLoggedIn);
 		return isLoggedIn;
     }
     
 	public static boolean getLocations(double latitude, double longitude, Handler handler, Context context) {
-		Log.d(TAG, "getLocations");
     	locationList treasureLocations = new locationList();
     	final HttpResponse resp;
         String respString;
@@ -233,9 +202,6 @@ public class NetworkTools {
             resp = mHttpClient.execute(get);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Successful authentication");
-                }
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
@@ -243,27 +209,17 @@ public class NetworkTools {
                 sendGeocachesResult(treasureLocations, handler, context);
                 return true;   
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Error authenticating" + resp.getStatusLine());
-                }
                 sendNetworkError("Error getting geocache data", handler, context);
                 return false;
             }
         } catch (final IOException e) {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "IOException when getting authtoken", e);
-            }
             sendNetworkError("IO Exception when getting geocache data", handler, context);
             return false;
         } finally {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "getAuthtoken completing");
-            }
         }
     }
 	
 	public static boolean getGeocache(int geocacheId, Handler handler, Context context) {
-		Log.d(TAG, "getGeocache");
     	location geocache = new location();
     	final HttpResponse resp;
         String respString;
@@ -287,38 +243,24 @@ public class NetworkTools {
             resp = mHttpClient.execute(get);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Successful get of geocache");
-                }
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
-                Log.d(TAG, respString.toString());
                 geocache = newGeocache(respString) ;
                 sendGeocacheResult(geocache, handler, context);
                 return true;   
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Error getting geocache data" + resp.getStatusLine());
-                }
                 sendNetworkError("Error getting geocache data", handler, context);
                 return false;
             }
         } catch (final IOException e) {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "IOException when getting geocache data", e);
-            }
             sendNetworkError("IO Exception when getting geocache data", handler, context);
             return false;
         } finally {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "getGeocache completing");
-            }
         }
     }
 	
 	public static boolean geocacheAction(int geocacheID, String action, Handler handler, final Context context) {
-		Log.d(TAG, "geocacheAction");
     	final HttpResponse resp;
         String respString;
 		boolean result;
@@ -356,39 +298,26 @@ public class NetworkTools {
             resp = mHttpClient.execute(post, localContext);
                         
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Successful geocache action");
-                }
                 HttpEntity hEntity = resp.getEntity();
                 InputStream instream = hEntity.getContent();
                 respString = convertStreamToString(instream,false);
                 result = connectionResult(respString);
                	sendGeocacheActionResult(result, action, handler, context); 
             } else {
-                if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                    Log.v(TAG, "Error setting geocache action" + resp.getStatusLine());
-                }
                 UserPreferences.setLoggedIn(false);
                 sendGeocacheShowError("Error setting geocache action", handler, context);
                 return false;
             }
         } catch (final IOException e) {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "IOException when setting geocache action", e);
-            }
             UserPreferences.setLoggedIn(false);
             sendGeocacheShowError("IO Exception when setting geocache action", handler, context);
             return false;
         } finally {
-            if (Log.isLoggable(TAG, Log.VERBOSE)) {
-                Log.v(TAG, "Setting geocache action completed");
-            }
         }
 		return result;
     }
 	
     private static locationList newLocationList(String JSONString) {
-    	Log.d(TAG, "newLocationList");
     	locationList mylocationList = new locationList();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -415,7 +344,6 @@ public class NetworkTools {
     }
 
 	private static location newGeocache(String JSONString) {
-		Log.d(TAG, "newGeocache");
     	location geocache = new location();
     	try {
     		JSONObject obj = new JSONObject(JSONString);
@@ -447,7 +375,6 @@ public class NetworkTools {
     }
     
     private static String convertStreamToString(InputStream is, boolean newline){
-    	Log.d(TAG, "convertStreamToString");
     	BufferedReader reader = new BufferedReader(new InputStreamReader(is));
     	StringBuilder sb = new StringBuilder();
     	
@@ -473,9 +400,7 @@ public class NetworkTools {
     }
     
     private static boolean connectionResult(String JSONString) {
-    	Log.d(TAG, "connectionResult");
     	String strResult = "false";
-    	Log.d(TAG, JSONString);
     	try {
     		JSONObject obj = new JSONObject(JSONString);
     		JSONArray jsonArray = obj.getJSONArray("connection");
@@ -490,9 +415,7 @@ public class NetworkTools {
     	}
     	catch (Exception je) {
     		strResult = je.getMessage();
-    		Log.d(TAG, "uh-oh"+strResult);
     	}
-    	Log.d(TAG, "Action parsed="+strResult);
     	return Boolean.parseBoolean(strResult);
     }
     
@@ -506,7 +429,6 @@ public class NetworkTools {
      */
     private static void sendResult(final Boolean result, final Handler handler,
         final Context context) {
-		Log.d(TAG, "sendResult");
         if (handler == null || context == null) {
             return;
         }
@@ -527,7 +449,6 @@ public class NetworkTools {
      */
     private static void sendGeocacheActionResult(final Boolean result, final String action, final Handler handler,
         final Context context) {
-    	Log.d(TAG, "sendGeocacheActionResult");
         if (handler == null || context == null) {
             return;
         }
@@ -548,7 +469,6 @@ public class NetworkTools {
      */
     private static void sendGeocachesResult(final locationList result, final Handler handler,
         final Context context) {
-    	Log.d(TAG, "sendGeocachesResult");
         if (handler == null || context == null) {
             return;
         }
@@ -569,7 +489,6 @@ public class NetworkTools {
      */
     private static void sendGeocacheResult(final location result, final Handler handler,
         final Context context) {
-    	Log.d(TAG, "sendGeocacheResult");
         if (handler == null || context == null) {
             return;
         }
@@ -582,7 +501,6 @@ public class NetworkTools {
     
     private static void sendGeocacheShowError(final String result, final Handler handler,
             final Context context) {
-    	Log.d(TAG, "sendGeocacheShowError");
         if (handler == null || context == null) {
             return;
         }
@@ -595,7 +513,6 @@ public class NetworkTools {
     
     private static void sendNetworkError(final String result, final Handler handler,
             final Context context) {
-    	Log.d(TAG, "sendNetworkError");
         if (handler == null || context == null) {
             return;
         }
@@ -607,7 +524,6 @@ public class NetworkTools {
     }
     
 	public static boolean gpsEnabled(Context context) {
-		Log.d(TAG, "gpsEnabled");
     	LocationManager locManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);  
     	return locManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 	}

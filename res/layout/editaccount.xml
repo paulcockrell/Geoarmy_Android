@@ -4,6 +4,12 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	>
+	<TextView android:text="Enter your www.geoarmy.net account details."
+						android:id="@+id/register"
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:paddingBottom="10px"
+	/>
 	<TextView android:id="@+id/lbl_user"
 			        	android:textStyle="bold"
 			        	android:layout_width="fill_parent"
@@ -29,7 +35,11 @@
 		android:layout_width="fill_parent"
 		android:inputType="textPassword">
 	</EditText>
-
+	<LinearLayout
+	  	android:id="@+id/InnerRelativeLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 	<Button 
 		android:id="@+id/updateButton"
 		android:layout_width="wrap_content"
@@ -45,5 +55,6 @@
 		android:text="Close"
 		android:onClick="">
 	</Button>
+</LinearLayout>
 
 </LinearLayout>
